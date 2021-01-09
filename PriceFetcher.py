@@ -25,18 +25,3 @@ class Fetcher:
 
     async def connect_ws(self, symbol: str):
         await self.exchange_manager.start_stream(symbol)
-
-
-async def price_fetcher(x: Fetcher, symbol: str):
-    while True:
-        print(x.fetch_price(symbol))
-        await asyncio.sleep(0.5)
-
-
-async def runner():
-    x = Fetcher('Binance')
-    symbol = 'btcusdt'
-    await asyncio.gather(x.connect_ws(symbol), price_fetcher(x, symbol))
-
-if __name__ == "__main__":
-    asyncio.run(runner())
