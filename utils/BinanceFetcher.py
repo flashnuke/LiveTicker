@@ -21,7 +21,6 @@ class Binance:
             msg = await ws.receive()
             if msg.type == aiohttp.WSMsgType.TEXT:
                 msg = msg.json()
-                print(msg)
                 self.trade_stream_parser(msg['data'])
 
             else:
@@ -36,5 +35,5 @@ class Binance:
         self.tickers[ticker_name] = float(last_price)
 
     def get_price(self, symbol):
-        return self.tickers[symbol]
+        return self.tickers[symbol.upper()]
 

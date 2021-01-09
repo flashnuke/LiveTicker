@@ -27,14 +27,16 @@ class Fetcher:
         await self.exchange_manager.start_stream(symbol)
 
 
-async def some_loop():
+async def price_fetcher(x: Fetcher, symbol: str):
     while True:
-        print("asd")
+        print(x.fetch_price(symbol))
         await asyncio.sleep(0.5)
+
 
 async def runner():
     x = Fetcher('Binance')
-    await asyncio.gather(x.connect_ws('btcusdt'), some_loop())
+    symbol = 'btcusdt'
+    await asyncio.gather(x.connect_ws(symbol), price_fetcher(x, symbol))
 
 if __name__ == "__main__":
     asyncio.run(runner())
