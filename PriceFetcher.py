@@ -1,15 +1,18 @@
-from utils import BinanceFetcher as BinanceFetcher
+from utils.BinanceFetcher import Binance
+import asyncio
+import aiohttp
+
 
 class Fetcher:
     """
     A higher class used for implementing price fetching methods.
     """
     exchange_mapper = dict()
-    exchange_mapper['Binance'] = BinanceFetcher
+    exchange_mapper['Binance'] = Binance
 
     def __init__(self, ex_name: str):
         if ex_name in self.exchange_mapper:
-            self.exchange_manager = self.exchange_mapper['ex_name']
+            self.exchange_manager = self.exchange_mapper[ex_name]()
         else:
             raise Exception(f"Exchange {ex_name} is not supported")
 
@@ -20,5 +23,18 @@ class Fetcher:
         """
         return self.exchange_manager.get_price(symbol)
 
-    def connect_ws(self, symbol: str):
-        self.exchange_manager.start_stream(symbol)
+    async def connect_ws(self, symbol: str):
+        await self.exchange_manager.start_stream(symbol)
+
+
+async def some_loop():
+    while True:
+        print("asd")
+        await asyncio.sleep(0.5)
+
+async def runner():
+    x = Fetcher('Binance')
+    await asyncio.gather(x.connect_ws('btcusdt'), some_loop())
+
+if __name__ == "__main__":
+    asyncio.run(runner())
