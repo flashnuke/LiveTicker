@@ -1,5 +1,6 @@
 import asyncio
 import aiohttp
+import requests
 
 
 class Binance:
@@ -34,6 +35,15 @@ class Binance:
 
         self.tickers[ticker_name] = float(last_price)
 
-    def get_price(self, symbol):
-        return self.tickers[symbol.upper()]
+    def get_price_rest(self, symbol: str):
+        """
+        Fetches price using REST
+        """
+        return float(requests.get(self._BASE_REST + f"/api/v3/avgPrice?symbol={symbol.upper()}").json()["price"])
+
+    def get_price(self, symbol: str, use_rest: bool):
+        """
+        if use_rest is  true, using REST to fetch price. else: handle locally by WS
+        """
+        return self.get_price_rest(symbol) if use_rest else self.tickers[symbol.upper()]
 

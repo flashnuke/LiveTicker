@@ -16,12 +16,12 @@ class Fetcher:
         else:
             raise Exception(f"Exchange {ex_name} is not supported")
 
-    def fetch_price(self, symbol: str):
+    def fetch_price(self, symbol: str, use_rest: bool):
         """
         if connected ws, will simply return price.
         else: use REST
         """
-        return self.exchange_manager.get_price(symbol)
+        return self.exchange_manager.get_price(symbol, use_rest)
 
     async def connect_ws(self, symbol: str):
         await self.exchange_manager.start_stream(symbol)
