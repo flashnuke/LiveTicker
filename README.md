@@ -16,5 +16,9 @@ Compiled by buildozer
 ## buildozer android permissions
 `android.permissions = INTERNET`
 
+## buildozer versions
+* `osx.python_version = 3.8.5`
+* `osx.kivy_version = 2.0.0`
+
 ## general notes
 * added the SSL certificate as an env var
