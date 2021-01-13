@@ -62,7 +62,7 @@ class MainApp(App):
         self.price_label = Label(text='0.0',
                                  bold=True,
                                  size_hint=(.8, .8),
-                                 font_size=75,
+                                 font_size=250,
                                  pos_hint={'center_x': .5, 'center_y': .9})
         main_layout.add_widget(self.price_label)  # add price label
 
