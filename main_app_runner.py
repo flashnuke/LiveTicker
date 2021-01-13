@@ -30,8 +30,9 @@ class MainApp(App):
     def build(self):
         main_layout = BoxLayout(orientation="vertical")
         self.price_label = Label(text='0.0',
+                                 bold=True,
                                  size_hint=(.8, .8),
-                                 font_size=100,
+                                 font_size=75,
                                  pos_hint={'center_x': .5, 'center_y': .9})
         main_layout.add_widget(self.price_label)  # add price label
 
@@ -40,6 +41,7 @@ class MainApp(App):
             time.sleep(0.05)
 
         self.pnl_label = Label(text=self.zero_pnl,
+                               bold=True,
                                size_hint=(.5, .5),
                                font_size=20,
                                pos_hint={'center_x': .5, 'center_y': .9})
@@ -62,12 +64,13 @@ class MainApp(App):
         total_pnl_layout = BoxLayout(orientation="horizontal")
         self.status_label = Label(text='Total PnL',
                                   size_hint=(.5, .5),
-                                  font_size=35,
+                                  font_size=30,
                                   pos_hint={'center_x': .5, 'center_y': .9})
         total_pnl_layout.add_widget(self.status_label)  # add price label
         self.status_pnl_label = Label(text='',
+                                      bold=True,
                                       size_hint=(.5, .5),
-                                      font_size=35,
+                                      font_size=30,
                                       pos_hint={'center_x': .5, 'center_y': .9})
         total_pnl_layout.add_widget(self.status_pnl_label)  # add price label
         self.update_status_label()
@@ -76,14 +79,14 @@ class MainApp(App):
         buttons_layout = BoxLayout(orientation="horizontal",
                                    size_hint=(1, 0.3))
         button_buy = Button(text='Buy',
-                            size_hint=(.5, .5),
+                            size_hint=(.8, .8),
                             pos_hint={'center_x': .3, 'center_y': .3},
                             background_color=get_color_from_hex("#3de03a"))
         button_buy.bind(on_press=self.on_press_buy)
         buttons_layout.add_widget(button_buy)
 
         button_sell = Button(text='Sell',
-                             size_hint=(.5, .5),
+                             size_hint=(.8, .8),
                              pos_hint={'center_x': .3, 'center_y': .3},
                              background_color=get_color_from_hex("#eb3838"))
         button_sell.bind(on_press=self.on_press_sell)
@@ -148,10 +151,12 @@ class MainApp(App):
         self.last_price = price
 
     def update_pnl(self, price):
-        # todo: define
+        # todo: docs
         if self.current_position != 0:
             self.current_pnl = self.entry_price / price
-            self.current_pnl = round((self.current_pnl - 1) * 100, 2)
+            self.current_pnl = round((self.current_pnl - 1) * 100, 2) if self.current_position == -1 else \
+                round((1 - self.current_pnl) * 100, 2)
+
             self.pnl_label.text = str(f"{self.current_pnl}%")
             if self.current_pnl > 0:
                 self.pnl_label.color = get_color_from_hex("#00b82b")
@@ -165,12 +170,25 @@ class MainApp(App):
         self.entry_price_label.text = str(self.entry_price)
 
     def update_position_label(self):
-        # todo: define
+        # todo: define - color
         self.pos_str_label.text = self.position_mapping[self.current_position]
+        if self.current_position > 0:
+            self.pos_str_label.color = get_color_from_hex("#00b82b")
+        elif self.current_position < 0:
+            self.pos_str_label.color = get_color_from_hex("#b80000")
+        else:
+            self.pos_str_label.color = get_color_from_hex("#ffffff")
 
     def update_status_label(self):
         """constructs status string"""
+        # todo: define - color
         self.status_pnl_label.text = f"{round(self.cumulative_pnl, 2)}%"
+        if self.cumulative_pnl > 0:
+            self.status_pnl_label.color = get_color_from_hex("#00b82b")
+        elif self.cumulative_pnl < 0:
+            self.status_pnl_label.color = get_color_from_hex("#b80000")
+        else:
+            self.status_pnl_label.color = get_color_from_hex("#ffffff")
 
 
 if __name__ == "__main__":
