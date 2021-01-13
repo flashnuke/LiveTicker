@@ -1,5 +1,5 @@
 # LiveTicker
-Live price ticker game
+Live price ticker game\
 For now only support BTC/USDT Binance
 
 
