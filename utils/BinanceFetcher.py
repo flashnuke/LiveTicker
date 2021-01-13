@@ -2,6 +2,8 @@ import requests
 import websockets
 import json
 import asyncio
+import os
+import certifi
 
 
 class Binance:
@@ -16,6 +18,7 @@ class Binance:
         manage the stream
         """
         full_path = self._BASE_WS + f"/stream?streams={symbol.lower()}@aggTrade"
+        os.environ['SSL_CERT_FILE'] = certifi.where()  # set ssl certificate
 
         async with websockets.connect(full_path) as ws:
             while True:

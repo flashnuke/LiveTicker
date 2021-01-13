@@ -7,6 +7,11 @@ from PriceFetcher import Fetcher
 from threading import Thread
 from time import sleep
 
+# todo: name to main
+# todo: all to async
+# todo: pass async loop into Binance and use it there
+# todo: if passed, not run until complete? ensure future?
+
 
 class MainApp(App):
     """
