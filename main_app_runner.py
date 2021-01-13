@@ -72,8 +72,8 @@ class MainApp(App):
 
         self.pnl_label = Label(text=self.zero_pnl,
                                bold=True,
-                               size_hint=(.8, .8),
-                               font_size=20,
+                               size_hint=(.5, .5),
+                               font_size=50,
                                pos_hint={'center_x': .5, 'center_y': .9})
         main_layout.add_widget(self.pnl_label)  # add price label
 
@@ -81,14 +81,14 @@ class MainApp(App):
         self.pos_str_label = Label(text='',
                                    bold=True,
                                    size_hint=(.5, .5),
-                                   font_size=20,
+                                   font_size=50,
                                    pos_hint={'center_x': .5, 'center_y': .9})
         entry_price_status_layout.add_widget(self.pos_str_label)  # add price label
         self.update_position_label()
         self.entry_price_label = Label(text='0.00',
                                        italic=True,
                                        size_hint=(.5, .5),
-                                       font_size=20,
+                                       font_size=50,
                                        pos_hint={'center_x': .5, 'center_y': .9})
         entry_price_status_layout.add_widget(self.entry_price_label)  # add price label
         main_layout.add_widget(entry_price_status_layout)
@@ -96,13 +96,13 @@ class MainApp(App):
         total_pnl_layout = BoxLayout(orientation="horizontal")
         self.status_label = Label(text='Total PnL',
                                   size_hint=(.5, .5),
-                                  font_size=30,
+                                  font_size=85,
                                   pos_hint={'center_x': .5, 'center_y': .9})
         total_pnl_layout.add_widget(self.status_label)  # add price label
         self.cum_pnl_label = Label(text='',
                                    bold=True,
                                    size_hint=(.5, .5),
-                                   font_size=30,
+                                   font_size=85,
                                    pos_hint={'center_x': .5, 'center_y': .9})
         total_pnl_layout.add_widget(self.cum_pnl_label)  # add price label
         self.update_cum_pnl_label()
