@@ -1,7 +1,6 @@
 import requests
 import websocket
 import json
-import time
 
 
 class Binance:
@@ -12,7 +11,9 @@ class Binance:
         self.tickers = dict()
 
     def start_stream(self, symbol: str, cb_func):
-        # todo: support multiple symbols
+        """
+        start a websocket stream and pass the price into the callback function
+        """
         self.tickers[symbol.upper()] = float()  # will be used to store latest price of ticker
         full_path = self._BASE_WS + f"/stream?streams={symbol.lower()}@aggTrade"
 
@@ -24,7 +25,6 @@ class Binance:
                 result = json.loads(result)
                 self.trade_stream_parser(result['data'])
                 cb_func(self.tickers[symbol.upper()])
-                time.sleep(0.001)
 
             except websocket.WebSocketConnectionClosedException:
                 try:
@@ -43,7 +43,9 @@ class Binance:
                 print(f"Exception {wsexc} in websocket")
 
     def trade_stream_parser(self, msg: dict):
-        """callback for stream to parse trades msgs"""
+        """
+        callback for stream to parse trades msgs
+        """
         ticker_name, last_price = msg['s'], msg['p']
 
         self.tickers[ticker_name] = float(last_price)

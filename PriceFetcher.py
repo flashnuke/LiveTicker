@@ -22,4 +22,7 @@ class Fetcher:
         return self.exchange_manager.get_price(symbol, use_rest)
 
     def connect_ws(self, symbol: str, cb_func):
+        """
+        connect to ws stream and pass a callback function
+        """
         self.exchange_manager.start_stream(symbol, cb_func)
