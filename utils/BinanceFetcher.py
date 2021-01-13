@@ -1,6 +1,7 @@
 import requests
-import websocket
+import websockets
 import json
+import asyncio
 
 
 class Binance:
@@ -10,37 +11,36 @@ class Binance:
 
         self.tickers = dict()
 
+    async def stream_manager(self, symbol: str, cb_func):
+        """
+        manage the stream
+        """
+        full_path = self._BASE_WS + f"/stream?streams={symbol.lower()}@aggTrade"
+
+        async with websockets.connect(full_path) as ws:
+            while True:
+                try:
+                    result = await ws.recv()
+                    result = json.loads(result)
+                    self.trade_stream_parser(result['data'])
+                    cb_func(self.tickers[symbol.upper()])
+
+                except ConnectionAbortedError:
+                    print(f"Exception '{ConnectionAbortedError.__name__}' in re-establishing ws")
+
+                except Exception as wsexc:
+                    print(f"Exception {wsexc} in websocket")
+
     def start_stream(self, symbol: str, cb_func):
         """
         start a websocket stream and pass the price into the callback function
+        a loop is used in which an event loop is created each time it disconnects
         """
         self.tickers[symbol.upper()] = float()  # will be used to store latest price of ticker
-        full_path = self._BASE_WS + f"/stream?streams={symbol.lower()}@aggTrade"
 
-        ws = websocket.create_connection(full_path)
-
-        while True:
-            try:
-                result = ws.recv()
-                result = json.loads(result)
-                self.trade_stream_parser(result['data'])
-                cb_func(self.tickers[symbol.upper()])
-
-            except websocket.WebSocketConnectionClosedException:
-                try:
-                    ws = websocket.create_connection(full_path)
-                except Exception as establishexc:
-                    print(f"Exception '{establishexc}' in re-establishing ws")
-
-            except ConnectionAbortedError:
-                try:
-                    ws = websocket.create_connection(full_path)
-                except Exception as establishexc:
-                    print(f"Exception '{establishexc}' in re-establishing ws")
-
-            except Exception as wsexc:
-                ws = websocket.create_connection(full_path)
-                print(f"Exception {wsexc} in websocket")
+        while True:  # loop in case disconnects
+            # todo: event loop as class attribute
+            asyncio.new_event_loop().run_until_complete(self.stream_manager(symbol, cb_func))
 
     def trade_stream_parser(self, msg: dict):
         """
