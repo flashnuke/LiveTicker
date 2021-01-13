@@ -72,7 +72,7 @@ class MainApp(App):
 
         self.pnl_label = Label(text=self.zero_pnl,
                                bold=True,
-                               size_hint=(.5, .5),
+                               size_hint=(.8, .8),
                                font_size=20,
                                pos_hint={'center_x': .5, 'center_y': .9})
         main_layout.add_widget(self.pnl_label)  # add price label
