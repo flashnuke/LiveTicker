@@ -1,6 +1,4 @@
 from utils.BinanceFetcher import Binance
-import asyncio
-import aiohttp
 
 
 class Fetcher:
@@ -23,5 +21,5 @@ class Fetcher:
         """
         return self.exchange_manager.get_price(symbol, use_rest)
 
-    async def connect_ws(self, symbol: str):
-        await self.exchange_manager.start_stream(symbol)
+    def connect_ws(self, symbol: str, cb_func):
+        self.exchange_manager.start_stream(symbol, cb_func)

@@ -1,6 +1,7 @@
-import asyncio
-import aiohttp
 import requests
+import websocket
+import json
+import time
 
 
 class Binance:
@@ -10,24 +11,36 @@ class Binance:
 
         self.tickers = dict()
 
-    async def start_stream(self, symbol: str):
+    def start_stream(self, symbol: str, cb_func):
         # todo: support multiple symbols
         self.tickers[symbol.upper()] = float()  # will be used to store latest price of ticker
         full_path = self._BASE_WS + f"/stream?streams={symbol.lower()}@aggTrade"
 
-        session = aiohttp.ClientSession()
-        ws = await session.ws_connect(full_path)
+        ws = websocket.create_connection(full_path)
 
         while True:
-            msg = await ws.receive()
-            if msg.type == aiohttp.WSMsgType.TEXT:
-                msg = msg.json()
-                self.trade_stream_parser(msg['data'])
+            try:
+                result = ws.recv()
+                result = json.loads(result)
+                self.trade_stream_parser(result['data'])
+                cb_func(self.tickers[symbol.upper()])
+                time.sleep(0.001)
 
-            else:
-                print("error")
-                # todo: handle errors
-            await asyncio.sleep(0.01)
+            except websocket.WebSocketConnectionClosedException:
+                try:
+                    ws = websocket.create_connection(full_path)
+                except Exception as establishexc:
+                    print(f"Exception '{establishexc}' in re-establishing ws")
+
+            except ConnectionAbortedError:
+                try:
+                    ws = websocket.create_connection(full_path)
+                except Exception as establishexc:
+                    print(f"Exception '{establishexc}' in re-establishing ws")
+
+            except Exception as wsexc:
+                ws = websocket.create_connection(full_path)
+                print(f"Exception {wsexc} in websocket")
 
     def trade_stream_parser(self, msg: dict):
         """callback for stream to parse trades msgs"""
