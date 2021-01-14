@@ -9,9 +9,9 @@ from PriceFetcher import Fetcher
 from threading import Thread
 from time import sleep
 
-from kivy.config import Config
-Config.set('graphics', 'width', '412')
-Config.set('graphics', 'height', '915')
+# from kivy.config import Config
+# Config.set('graphics', 'width', '412')
+# Config.set('graphics', 'height', '915')
 
 
 class MainApp(App):
@@ -112,16 +112,17 @@ class MainApp(App):
 
         options_layout = BoxLayout(orientation="horizontal",
                                    # padding=[200, 100, 100, 100],
-                                   pos_hint={'center_x': 0.8, 'center_y': 0.5},)
+                                   pos_hint={'center_x': 0.6, 'center_y': 0.5},)
         button_settings = Button(text='',
                                  size_hint=(None, None),
-                                 size=(85, 85),
+                                 size=(170, 170),
                                  pos_hint={'center_x': .5, 'center_y': .5},
                                  background_normal='icons/settings_icon.png')
         button_settings.bind(on_press=self.on_press_settings)
         options_layout.add_widget(button_settings)
         button_refresh = Button(text='',
                                 size_hint=(None, None),
+                                size=(170, 170),
                                 pos_hint={'center_x': .5, 'center_y': .5},
                                 background_normal='icons/refresh_icon.png')
         button_refresh.bind(on_press=self.on_press_refresh)
@@ -129,7 +130,7 @@ class MainApp(App):
         self.main_layout.add_widget(options_layout)
 
         position_buttons_layout = BoxLayout(orientation="horizontal",
-                                            size_hint=(1, 0.3))
+                                            size_hint=(1, 0.5))
         button_buy = Button(text='Buy',
                             size_hint=(.8, .8),
                             pos_hint={'center_x': .5, 'center_y': .8},
@@ -151,9 +152,9 @@ class MainApp(App):
         self.popup_settings = Popup(title='Settings',  # todo: content=
                                     size_hint=(0.5, 0.5))
 
-        self.symbols_dropdown = DropDown()
+        self.symbols_dropdown = DropDown(max_height=500)
         for symbol in self.price_fetcher.get_all_symbols():
-            symbol_button = Button(text=symbol.upper(), size_hint_y=None, height=40)
+            symbol_button = Button(text=symbol.upper(), size_hint_y=None, height=120)
             symbol_button.bind(on_release=lambda symbol_button: self.symbols_dropdown.select(symbol_button.text))
             self.symbols_dropdown.add_widget(symbol_button)
 
