@@ -276,6 +276,8 @@ class MainApp(App):
         self.current_position = 0
         self.entry_price = 0
         self.reset_pnl()
+        self.update_position_label()
+        self.update_entry_label()
 
     def reset_pnl(self):
         """Reset pnl label"""
