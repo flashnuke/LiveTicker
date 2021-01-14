@@ -27,6 +27,12 @@ class Fetcher:
         """
         self.exchange_manager.start_stream(symbol, cb_func)
 
+    def disconnect_ws(self, symbol: str):
+        """
+        disconnect ticker ws stream
+        """
+        self.exchange_manager.end_stream(symbol)
+
     def get_all_symbols(self):
         """
         get all possible tickers for a certain exchange
