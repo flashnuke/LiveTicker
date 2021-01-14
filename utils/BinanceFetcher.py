@@ -4,6 +4,7 @@ import json
 import asyncio
 import os
 import certifi
+from math import log10
 
 
 class Binance:
@@ -12,14 +13,46 @@ class Binance:
     _BASE_WS - base for WS path
 
     tickers - a dict containing all symbols and their prices (if connected)
+    _ticker_precision - quote precision for all tickers
+    _connected_tickers - all currenctly connected tickers
     """
 
     def __init__(self):
         self._BASE_REST = "https://api.binance.com"
         self._BASE_WS = "wss://stream.binance.com:9443"
 
-        self._tickers = {symbol['symbol'].upper(): 0 for symbol in self.get_symbols_rest()}
+        self._tickers = dict()
+        self._ticker_precision = dict()
         self._connected_tickers = set()
+
+        self.set_up_tickers()
+
+    @staticmethod
+    def get_precision_based_on_ticksize(ticksize: float):
+        """
+        returns precision based on ticksize
+        # todo: lru_cache
+        """
+        return int(-log10(ticksize)) if ticksize < 1 else 0
+
+    def set_up_tickers(self):
+        """
+        sets up all tickers and their precision
+        """
+        all_symbols = self.get_symbols_rest()
+        for symbol in all_symbols:
+            if symbol['status'] == "TRADING":
+                self._tickers[symbol['symbol']] = float()
+                for s_filter in symbol['filters']:
+                    if s_filter['filterType'] == 'PRICE_FILTER':
+                        self._ticker_precision[symbol['symbol']] = \
+                            self.get_precision_based_on_ticksize(float(s_filter['tickSize']))
+
+    def get_precision(self, symbol: str):
+        """
+        get precision based on symbol
+        """
+        return self._ticker_precision[symbol]
 
     async def stream_manager(self, symbol: str, cb_func):
         """

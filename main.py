@@ -1,15 +1,17 @@
 from kivy.app import App
 from kivy.uix.button import Button
 from kivy.uix.label import Label
+from kivy.uix.popup import Popup
+from kivy.uix.dropdown import DropDown
 from kivy.uix.boxlayout import BoxLayout
 from kivy.utils import get_color_from_hex
 from PriceFetcher import Fetcher
 from threading import Thread
 from time import sleep
 
-# from kivy.config import Config
-# Config.set('graphics', 'width', '412')
-# Config.set('graphics', 'height', '915')
+from kivy.config import Config
+Config.set('graphics', 'width', '412')
+Config.set('graphics', 'height', '915')
 
 
 class MainApp(App):
@@ -26,7 +28,7 @@ class MainApp(App):
     position_mapping - convert from int to str representation of position type
     """
     _EX = "Binance"
-    _SYM = "btcusdt"
+    _SYM = "BTCUSDT"
 
     price_fetcher = Fetcher(_EX)
     current_position = int()
@@ -56,6 +58,8 @@ class MainApp(App):
             options_layout - to add padding to the button
                 button_refresh - a refresh button for the cumulative PnL
                 button_settings - a button to open settings menu
+                    popup_settings - a popup window for settings
+                        symbols_list -  dropdown list for symbols
             position_buttons_layout
                 button_buy
                 button_sell
@@ -144,6 +148,23 @@ class MainApp(App):
 
         self.start_ticker(self._SYM)
 
+        self.popup_settings = Popup(title='Settings',  # todo: content=
+                                    size_hint=(0.5, 0.5))
+
+        self.symbols_dropdown = DropDown()
+        for symbol in self.price_fetcher.get_all_symbols():
+            symbol_button = Button(text=symbol.upper(), size_hint_y=None, height=40)
+            symbol_button.bind(on_release=lambda symbol_button: self.symbols_dropdown.select(symbol_button.text))
+            self.symbols_dropdown.add_widget(symbol_button)
+
+        self.main_symbol_button = Button(text=self._SYM.upper(),
+                                         size_hint=(0.5, 0.2),
+                                         pos_hint={'center_x': .5, 'center_y': .8})
+        self.main_symbol_button.bind(on_release=self.symbols_dropdown.open)
+        self.symbols_dropdown.bind(on_select=self.change_ticker)
+
+        self.popup_settings.add_widget(self.main_symbol_button)
+
         return self.main_layout
 
     def start_ticker(self, symbol: str):
@@ -164,6 +185,20 @@ class MainApp(App):
         stop ticker (kill stream and thread)
         """
         self.price_fetcher.disconnect_ws(symbol)
+
+    def change_ticker(self, instance, new_symbol: str):
+        """
+        disconnects old symbol stream and connects a new one
+        uses first fetch via REST for illiquid pairs
+        """
+        self.stop_ticker(self._SYM)
+        self.reset_pnl()
+        self.reset_position()
+
+        self._SYM = new_symbol
+        self.on_price_update(self.price_fetcher.fetch_price(self._SYM, use_rest=True))
+        self.start_ticker(new_symbol)
+        self.main_symbol_button.text = new_symbol
 
     def on_press_sell(self, instance):
         """
@@ -209,7 +244,7 @@ class MainApp(App):
         """
         opens the settings popup menu
         """
-
+        self.popup_settings.open()
 
     def reset_cum_pnl(self):
         """
@@ -251,7 +286,8 @@ class MainApp(App):
         will be passed as callback to ws stream
         """
         self.update_pnl(price)
-        self.price_label.text = str(price)
+        precision = self.price_fetcher.get_symbol_precision(self._SYM)
+        self.price_label.text = f'{price:.{precision}f}'
         if price > self.last_price:
             self.price_label.color = get_color_from_hex("#00b82b")
         else:
