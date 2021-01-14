@@ -7,6 +7,10 @@ from PriceFetcher import Fetcher
 from threading import Thread
 from time import sleep
 
+# from kivy.config import Config
+# Config.set('graphics', 'width', '412')
+# Config.set('graphics', 'height', '915')
+
 
 class MainApp(App):
     """
@@ -49,9 +53,10 @@ class MainApp(App):
             total_pnl_layout
                 status_label - a string containing 'Total PnL'
                 cum_pnl_label - the cumulative PnL
-            refresh_layout - to add padding to the button
+            options_layout - to add padding to the button
                 button_refresh - a refresh button for the cumulative PnL
-            buttons_layout
+                button_settings - a button to open settings menu
+            position_buttons_layout
                 button_buy
                 button_sell
         """
@@ -101,34 +106,41 @@ class MainApp(App):
         self.update_cum_pnl_label()
         self.main_layout.add_widget(total_pnl_layout)
 
-        refresh_layout = BoxLayout(orientation="vertical",
-                                   padding=[0, 0, 0, 100],
-                                   pos_hint={'center_x': .5, 'center_y': .9})
+        options_layout = BoxLayout(orientation="horizontal",
+                                   # padding=[200, 100, 100, 100],
+                                   pos_hint={'center_x': 0.8, 'center_y': 0.5},)
+        button_settings = Button(text='',
+                                 size_hint=(None, None),
+                                 size=(85, 85),
+                                 pos_hint={'center_x': .5, 'center_y': .5},
+                                 background_normal='icons/settings_icon.png')
+        button_settings.bind(on_press=self.on_press_settings)
+        options_layout.add_widget(button_settings)
         button_refresh = Button(text='',
                                 size_hint=(None, None),
-                                pos_hint={'center_x': .5, 'center_y': .9},
+                                pos_hint={'center_x': .5, 'center_y': .5},
                                 background_normal='icons/refresh_icon.png')
         button_refresh.bind(on_press=self.on_press_refresh)
-        refresh_layout.add_widget(button_refresh)
-        self.main_layout.add_widget(refresh_layout)
+        options_layout.add_widget(button_refresh)
+        self.main_layout.add_widget(options_layout)
 
-        buttons_layout = BoxLayout(orientation="horizontal",
-                                   size_hint=(1, 0.3))
+        position_buttons_layout = BoxLayout(orientation="horizontal",
+                                            size_hint=(1, 0.3))
         button_buy = Button(text='Buy',
                             size_hint=(.8, .8),
                             pos_hint={'center_x': .5, 'center_y': .8},
                             background_color=get_color_from_hex("#3de03a"))
         button_buy.bind(on_press=self.on_press_buy)
-        buttons_layout.add_widget(button_buy)
+        position_buttons_layout.add_widget(button_buy)
 
         button_sell = Button(text='Sell',
                              size_hint=(.8, .8),
                              pos_hint={'center_x': .5, 'center_y': .8},
                              background_color=get_color_from_hex("#eb3838"))
         button_sell.bind(on_press=self.on_press_sell)
-        buttons_layout.add_widget(button_sell)
+        position_buttons_layout.add_widget(button_sell)
 
-        self.main_layout.add_widget(buttons_layout)
+        self.main_layout.add_widget(position_buttons_layout)
 
         self.start_ticker(self._SYM)
 
@@ -186,6 +198,18 @@ class MainApp(App):
         when pressing refresh button
         """
         self.reset_cum_pnl()
+
+    def on_press_settings(self, instance):
+        """
+        when pressing settings button
+        """
+        self.open_settings_menu()
+
+    def open_settings_menu(self):
+        """
+        opens the settings popup menu
+        """
+
 
     def reset_cum_pnl(self):
         """
