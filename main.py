@@ -7,8 +7,6 @@ from PriceFetcher import Fetcher
 from threading import Thread
 from time import sleep
 
-# todo: refractor symbol stream
-# todo: kill previous stream
 # todo: reset total pnl button
 
 
@@ -53,6 +51,7 @@ class MainApp(App):
             total_pnl_layout
                 status_label - a string containing 'Total PnL'
                 cum_pnl_label - the cumulative PnL
+                button_refresh - a refresh button for the cumulative PnL
             buttons_layout
                 button_buy
                 button_sell
@@ -100,6 +99,12 @@ class MainApp(App):
                                    font_size=85,
                                    pos_hint={'center_x': .5, 'center_y': .9})
         total_pnl_layout.add_widget(self.cum_pnl_label)  # add price label
+        button_refresh = Button(text='',
+                                size_hint=(None, None),
+                                pos_hint={'center_x': .5, 'center_y': .9},
+                                background_normal='icons/refresh_icon.png')
+        button_refresh.bind(on_press=self.on_press_refresh)
+        total_pnl_layout.add_widget(button_refresh)
         self.update_cum_pnl_label()
         main_layout.add_widget(total_pnl_layout)
 
@@ -158,6 +163,33 @@ class MainApp(App):
 
         self.update_status_labels()
 
+    def on_press_buy(self, instance):
+        """
+        if no pos - enter long
+        if short - close pos
+        """
+        if self.current_position == 0:
+            self.current_position = 1
+            self.entry_price = self.last_price
+
+        elif self.current_position == -1:
+            self.reset_position()
+
+        self.update_status_labels()
+
+    def on_press_refresh(self, instance):
+        """
+        when pressing refresh button
+        """
+        self.reset_cum_pnl()
+
+    def reset_cum_pnl(self):
+        """
+        resets cumulative pnl
+        """
+        self.cumulative_pnl = 0.0
+        self.update_cum_pnl_label()
+
     def update_status_labels(self):
         """
         updates:
@@ -185,20 +217,6 @@ class MainApp(App):
         """Reset pnl label"""
         self.pnl_label.text = self.zero_pnl
         self.pnl_label.color = get_color_from_hex("#ffffff")
-
-    def on_press_buy(self, instance):
-        """
-        if no pos - enter long
-        if short - close pos
-        """
-        if self.current_position == 0:
-            self.current_position = 1
-            self.entry_price = self.last_price
-
-        elif self.current_position == -1:
-            self.reset_position()
-
-        self.update_status_labels()
 
     def on_price_update(self, price):
         """
