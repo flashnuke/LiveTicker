@@ -7,8 +7,6 @@ from PriceFetcher import Fetcher
 from threading import Thread
 from time import sleep
 
-# todo: reset total pnl button
-
 
 class MainApp(App):
     """
@@ -42,7 +40,7 @@ class MainApp(App):
 
     def build(self):
         """
-        main_layout
+        main_layout  (used as class attr)
             price_label - live price feed
             pnl_label - live PnL of current position
             entry_price_status_layout
@@ -51,25 +49,26 @@ class MainApp(App):
             total_pnl_layout
                 status_label - a string containing 'Total PnL'
                 cum_pnl_label - the cumulative PnL
+            refresh_layout - to add padding to the button
                 button_refresh - a refresh button for the cumulative PnL
             buttons_layout
                 button_buy
                 button_sell
         """
-        main_layout = BoxLayout(orientation="vertical")
+        self.main_layout = BoxLayout(orientation="vertical")
         self.price_label = Label(text='0.0',
                                  bold=True,
                                  size_hint=(.8, .8),
                                  font_size=250,
                                  pos_hint={'center_x': .5, 'center_y': .9})
-        main_layout.add_widget(self.price_label)  # add price label
+        self.main_layout.add_widget(self.price_label)  # add price label
 
         self.pnl_label = Label(text=self.zero_pnl,
                                bold=True,
                                size_hint=(.5, .5),
                                font_size=100,
                                pos_hint={'center_x': .5, 'center_y': .9})
-        main_layout.add_widget(self.pnl_label)  # add price label
+        self.main_layout.add_widget(self.pnl_label)  # add price label
 
         entry_price_status_layout = BoxLayout(orientation='horizontal')
         self.pos_str_label = Label(text='',
@@ -85,7 +84,7 @@ class MainApp(App):
                                        font_size=50,
                                        pos_hint={'center_x': .5, 'center_y': .9})
         entry_price_status_layout.add_widget(self.entry_price_label)  # add price label
-        main_layout.add_widget(entry_price_status_layout)
+        self.main_layout.add_widget(entry_price_status_layout)
 
         total_pnl_layout = BoxLayout(orientation="horizontal")
         self.status_label = Label(text='Total PnL',
@@ -99,14 +98,19 @@ class MainApp(App):
                                    font_size=85,
                                    pos_hint={'center_x': .5, 'center_y': .9})
         total_pnl_layout.add_widget(self.cum_pnl_label)  # add price label
+        self.update_cum_pnl_label()
+        self.main_layout.add_widget(total_pnl_layout)
+
+        refresh_layout = BoxLayout(orientation="vertical",
+                                   padding=[0, 0, 0, 100],
+                                   pos_hint={'center_x': .5, 'center_y': .9})
         button_refresh = Button(text='',
                                 size_hint=(None, None),
                                 pos_hint={'center_x': .5, 'center_y': .9},
                                 background_normal='icons/refresh_icon.png')
         button_refresh.bind(on_press=self.on_press_refresh)
-        total_pnl_layout.add_widget(button_refresh)
-        self.update_cum_pnl_label()
-        main_layout.add_widget(total_pnl_layout)
+        refresh_layout.add_widget(button_refresh)
+        self.main_layout.add_widget(refresh_layout)
 
         buttons_layout = BoxLayout(orientation="horizontal",
                                    size_hint=(1, 0.3))
@@ -124,11 +128,11 @@ class MainApp(App):
         button_sell.bind(on_press=self.on_press_sell)
         buttons_layout.add_widget(button_sell)
 
-        main_layout.add_widget(buttons_layout)
+        self.main_layout.add_widget(buttons_layout)
 
         self.start_ticker(self._SYM)
 
-        return main_layout
+        return self.main_layout
 
     def start_ticker(self, symbol: str):
         """
