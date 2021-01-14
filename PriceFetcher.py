@@ -26,3 +26,9 @@ class Fetcher:
         connect to ws stream and pass a callback function
         """
         self.exchange_manager.start_stream(symbol, cb_func)
+
+    def get_all_symbols(self):
+        """
+        get all possible tickers for a certain exchange
+        """
+        return self.exchange_manager.get_tickers()

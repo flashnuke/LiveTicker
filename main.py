@@ -7,10 +7,9 @@ from PriceFetcher import Fetcher
 from threading import Thread
 from time import sleep
 
-# todo: name to main
-# todo: all to async
-# todo: pass async loop into Binance and use it there
-# todo: if passed, not run until complete? ensure future?
+# todo: refractor symbol stream
+# todo: kill previous stream
+# todo: reset total pnl button
 
 
 class MainApp(App):
@@ -65,10 +64,6 @@ class MainApp(App):
                                  font_size=250,
                                  pos_hint={'center_x': .5, 'center_y': .9})
         main_layout.add_widget(self.price_label)  # add price label
-
-        Thread(target=self.price_fetcher.connect_ws, args=(self._SYM, self.on_price_update), daemon=True).start()
-        while not self.last_price:
-            sleep(0.05)
 
         self.pnl_label = Label(text=self.zero_pnl,
                                bold=True,
@@ -126,7 +121,29 @@ class MainApp(App):
 
         main_layout.add_widget(buttons_layout)
 
+        self.start_ticker(self._SYM)
+
         return main_layout
+
+    def start_ticker(self, symbol: str):
+        """
+        start a new ticker on a new thread
+        * fetches all tickers and verifies symbol exists
+        * passes `self.on_price_update` as the callback method
+        """
+        if symbol.upper() in self.price_fetcher.get_all_symbols():
+            Thread(target=self.price_fetcher.connect_ws, args=(symbol, self.on_price_update), daemon=True).start()
+            while not self.last_price:
+                sleep(0.05)
+        else:
+            raise Exception(f"ticker {symbol} does not exist")
+
+    def stop_ticker(self, symbol: str):
+        """
+        stop ticker (kill stream and thread)
+        """
+        # todo: define
+        pass
 
     def on_press_sell(self, instance):
         """

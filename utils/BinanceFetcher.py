@@ -12,6 +12,7 @@ class Binance:
         self._BASE_WS = "wss://stream.binance.com:9443"
 
         self.tickers = dict()
+        self.tickers = {symbol['symbol'].upper(): 0 for symbol in self.get_symbols_rest()}
 
     async def stream_manager(self, symbol: str, cb_func):
         """
@@ -39,10 +40,9 @@ class Binance:
         start a websocket stream and pass the price into the callback function
         a loop is used in which an event loop is created each time it disconnects
         """
-        self.tickers[symbol.upper()] = float()  # will be used to store latest price of ticker
+        # self.tickers[symbol.upper()] = float()  # will be used to store latest price of ticker
 
         while True:  # loop in case disconnects
-            # todo: event loop as class attribute
             asyncio.new_event_loop().run_until_complete(self.stream_manager(symbol, cb_func))
 
     def trade_stream_parser(self, msg: dict):
@@ -59,9 +59,23 @@ class Binance:
         """
         return float(requests.get(self._BASE_REST + f"/api/v3/avgPrice?symbol={symbol.upper()}").json()["price"])
 
+    def get_symbols_rest(self):
+        """
+        Fetches symbols using REST
+        used to initialzie a dict containing last prices for all symbols
+        ws_stream uses this dict to update entries
+        """
+        response = requests.get(self._BASE_REST + "/api/v3/exchangeInfo").json()['symbols']
+        return response
+
     def get_price(self, symbol: str, use_rest: bool):
         """
         if use_rest is  true, using REST to fetch price. else: handle locally by WS
         """
         return self.get_price_rest(symbol) if use_rest else self.tickers[symbol.upper()]
 
+    def get_tickers(self):
+        """
+        getter for self.tickers
+        """
+        return self.tickers
