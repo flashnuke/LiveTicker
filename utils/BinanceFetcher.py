@@ -5,6 +5,7 @@ import asyncio
 import os
 import certifi
 from math import log10
+from functools import lru_cache
 
 
 class Binance:
@@ -27,17 +28,17 @@ class Binance:
 
         self.set_up_tickers()
 
-    @staticmethod
-    def get_precision_based_on_ticksize(ticksize: float):
+    @lru_cache()
+    def get_precision_based_on_ticksize(self, ticksize: float):
         """
         returns precision based on ticksize
-        # todo: lru_cache
         """
         return int(-log10(ticksize)) if ticksize < 1 else 0
 
     def set_up_tickers(self):
         """
         sets up all tickers and their precision
+        sorts by the ABC
         """
         all_symbols = self.get_symbols_rest()
         for symbol in all_symbols:
@@ -47,6 +48,8 @@ class Binance:
                     if s_filter['filterType'] == 'PRICE_FILTER':
                         self._ticker_precision[symbol['symbol']] = \
                             self.get_precision_based_on_ticksize(float(s_filter['tickSize']))
+
+        self._tickers = {symbol: price for symbol, price in sorted(self._tickers.items())}
 
     def get_precision(self, symbol: str):
         """

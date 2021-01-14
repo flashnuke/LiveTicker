@@ -1,4 +1,5 @@
 from utils.BinanceFetcher import Binance
+from functools import lru_cache
 
 
 class Fetcher:
@@ -39,6 +40,7 @@ class Fetcher:
         """
         return self.exchange_manager.get_tickers()
 
+    @lru_cache()
     def get_symbol_precision(self, symbol: str):
         """
         returns symbol precision for proper printing
