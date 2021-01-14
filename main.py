@@ -142,8 +142,7 @@ class MainApp(App):
         """
         stop ticker (kill stream and thread)
         """
-        # todo: define
-        pass
+        self.price_fetcher.disconnect_ws(symbol)
 
     def on_press_sell(self, instance):
         """
