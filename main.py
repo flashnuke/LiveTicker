@@ -144,8 +144,9 @@ class MainApp(App):
         self.main_layout.add_widget(position_buttons_layout)
 
         self.start_ticker(self._SYM)
-        from kivy.uix.modalview import ModalView
-        self.popup_settings = ModalView(size_hint=(0.5, 0.5),
+
+        self.popup_settings = Popup(title='Settings',
+                                    size_hint=(0.5, 0.5),
                                     background='icons/secondary_background.png',
                                     background_color=[1, 1, 1, .5])
 
@@ -157,7 +158,7 @@ class MainApp(App):
 
         self.main_symbol_button = Button(text=self._SYM.upper(),
                                          size_hint=(0.5, 0.2),
-                                         pos_hint={'center_x': .5, 'center_y': .9})
+                                         pos_hint={'center_x': .5, 'center_y': .8})
         self.main_symbol_button.bind(on_release=self.symbols_dropdown.open)
         self.symbols_dropdown.bind(on_select=self.change_ticker)
 
