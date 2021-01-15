@@ -106,9 +106,9 @@ class MainApp(App):
                                    size_hint=(.5, .5),
                                    font_size=85,
                                    pos_hint={'center_x': .5, 'center_y': .9})
-        total_pnl_layout.add_widget(self.cum_pnl_label)  # add price label
+        # total_pnl_layout.add_widget(self.cum_pnl_label)  # add price label
         self.update_cum_pnl_label()
-        self.main_layout.add_widget(total_pnl_layout)
+        # self.main_layout.add_widget(total_pnl_layout)
 
         options_layout = BoxLayout(orientation="horizontal",
                                    # padding=[200, 100, 100, 100],
@@ -127,6 +127,8 @@ class MainApp(App):
                                 background_normal='icons/refresh_icon.png')
         button_refresh.bind(on_press=self.on_press_refresh)
         options_layout.add_widget(button_refresh)
+        options_layout.add_widget(self.cum_pnl_label)
+
         self.main_layout.add_widget(options_layout)
 
         position_buttons_layout = BoxLayout(orientation="horizontal",
