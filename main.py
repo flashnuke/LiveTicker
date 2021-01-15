@@ -52,14 +52,12 @@ class MainApp(App):
             entry_price_status_layout
                 pos_str_label - string representation of current position
                 entry_price_label - entry price of current position
-            total_pnl_layout
-                status_label - a string containing 'Total PnL'
-                cum_pnl_label - the cumulative PnL
             options_layout - to add padding to the button
                 button_refresh - a refresh button for the cumulative PnL
                 button_settings - a button to open settings menu
                     popup_settings - a popup window for settings
                         symbols_list -  dropdown list for symbols
+                cum_pnl_label
             position_buttons_layout
                 button_buy
                 button_sell
@@ -95,16 +93,6 @@ class MainApp(App):
         entry_price_status_layout.add_widget(self.entry_price_label)  # add price label
         self.main_layout.add_widget(entry_price_status_layout)
 
-        total_pnl_layout = BoxLayout(orientation="horizontal")
-        self.status_label = Label(text='Total PnL',
-                                  size_hint=(.5, .5),
-                                  font_size=85,
-                                  pos_hint={'center_x': .5, 'center_y': .9})
-        total_pnl_layout.add_widget(self.status_label)  # add price label
-
-        # total_pnl_layout.add_widget(self.cum_pnl_label)  # add price label
-        # self.main_layout.add_widget(total_pnl_layout)
-
         options_layout = BoxLayout(orientation="horizontal",
                                    # padding=[200, 100, 100, 100],
                                    pos_hint={'center_x': 0.6, 'center_y': 0.5},
@@ -129,7 +117,7 @@ class MainApp(App):
                                    bold=True,
                                    size_hint=(.5, .5),
                                    font_size=140,
-                                   pos_hint={'center_x': .5, 'center_y': .55})
+                                   pos_hint={'center_x': .5, 'center_y': .5})
         options_layout.add_widget(self.cum_pnl_label)
         self.update_cum_pnl_label()
 
