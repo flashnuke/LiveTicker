@@ -93,6 +93,15 @@ class MainApp(App):
         entry_price_status_layout.add_widget(self.entry_price_label)  # add price label
         self.main_layout.add_widget(entry_price_status_layout)
 
+        self.symbol_label = Label(text='',
+                                  bold=True,
+                                  size_hint=(.5, .5),
+                                  font_size=100,
+                                  pos_hint={'center_x': .5, 'center_y': .5},
+                                  color=(237/255, 142/255, 43/255, 0.2))
+        self.main_layout.add_widget(self.symbol_label)  # add price label
+        self.update_symbol_label()
+
         options_layout = BoxLayout(orientation="horizontal",
                                    # padding=[200, 100, 100, 100],
                                    pos_hint={'center_x': 0.6, 'center_y': 0.5},
@@ -195,6 +204,7 @@ class MainApp(App):
         self.reset_position()
 
         self._SYM = new_symbol
+        self.update_symbol_label()
         self.on_price_update(self.price_fetcher.fetch_price(self._SYM, use_rest=True))
         self.start_ticker(new_symbol)
         self.main_symbol_button.text = new_symbol
@@ -312,6 +322,12 @@ class MainApp(App):
                 self.pnl_label.color = get_color_from_hex("#b80000")
             else:
                 self.reset_pnl()
+
+    def update_symbol_label(self):
+        """
+        Updates the entry price label
+        """
+        self.symbol_label.text = self._SYM
 
     def update_entry_label(self):
         """
