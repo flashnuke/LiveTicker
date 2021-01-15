@@ -2,6 +2,7 @@ from kivy.app import App
 from kivy.uix.button import Button
 from kivy.uix.label import Label
 from kivy.uix.popup import Popup
+from kivy.uix.modalview import ModalView
 from kivy.uix.dropdown import DropDown
 from kivy.uix.boxlayout import BoxLayout
 from kivy.utils import get_color_from_hex
@@ -143,9 +144,7 @@ class MainApp(App):
 
         self.start_ticker(self._SYM)
 
-        self.popup_settings = Popup(title='Settings',
-                                    size_hint=(0.5, 0.5),
-                                    background_color=[0, 0, 0, .5])
+        self.popup_settings = ModalView(background_color=[0, 0, 0, .5])
 
         self.symbols_dropdown = DropDown(max_height=650)
         for symbol in self.price_fetcher.get_all_symbols():
