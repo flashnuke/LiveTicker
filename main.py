@@ -126,6 +126,7 @@ class MainApp(App):
         position_buttons_layout = BoxLayout(orientation="horizontal",
                                             size_hint=(1, 0.5))
         button_buy = Button(text='Buy',
+                            bold=True,
                             size_hint=(.8, .8),
                             pos_hint={'center_x': .5, 'center_y': .8},
                             background_color=get_color_from_hex("#3de03a"))
@@ -133,6 +134,7 @@ class MainApp(App):
         position_buttons_layout.add_widget(button_buy)
 
         button_sell = Button(text='Sell',
+                             bold=True,
                              size_hint=(.8, .8),
                              pos_hint={'center_x': .5, 'center_y': .8},
                              background_color=get_color_from_hex("#eb3838"))
