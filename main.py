@@ -319,7 +319,8 @@ class MainApp(App):
         """
         Updates the entry price label
         """
-        self.entry_price_label.text = str(self.entry_price)
+        precision = self.price_fetcher.get_symbol_precision(self._SYM)
+        self.entry_price_label.text = f'{self.entry_price:.{precision}f}'
 
     def update_position_label(self):
         """
