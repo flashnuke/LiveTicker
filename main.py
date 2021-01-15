@@ -101,33 +101,37 @@ class MainApp(App):
                                   font_size=85,
                                   pos_hint={'center_x': .5, 'center_y': .9})
         total_pnl_layout.add_widget(self.status_label)  # add price label
-        self.cum_pnl_label = Label(text='',
-                                   bold=True,
-                                   size_hint=(.5, .5),
-                                   font_size=85,
-                                   pos_hint={'center_x': .5, 'center_y': .9})
+
         # total_pnl_layout.add_widget(self.cum_pnl_label)  # add price label
-        self.update_cum_pnl_label()
         # self.main_layout.add_widget(total_pnl_layout)
 
         options_layout = BoxLayout(orientation="horizontal",
                                    # padding=[200, 100, 100, 100],
-                                   pos_hint={'center_x': 0.6, 'center_y': 0.5},)
+                                   pos_hint={'center_x': 0.6, 'center_y': 0.5},
+                                   spacing=100)
         button_settings = Button(text='',
                                  size_hint=(None, None),
                                  size=(170, 170),
                                  pos_hint={'center_x': .5, 'center_y': .5},
-                                 background_normal='icons/settings_icon.png')
+                                 background_normal='icons/settings_icon.png',
+                                 background_down='icons/settings_icon.png')
         button_settings.bind(on_press=self.on_press_settings)
         options_layout.add_widget(button_settings)
         button_refresh = Button(text='',
                                 size_hint=(None, None),
                                 size=(170, 170),
                                 pos_hint={'center_x': .5, 'center_y': .5},
-                                background_normal='icons/refresh_icon.png')
+                                background_normal='icons/refresh_icon.png',
+                                background_down='icons/refresh_icon.png')
         button_refresh.bind(on_press=self.on_press_refresh)
         options_layout.add_widget(button_refresh)
+        self.cum_pnl_label = Label(text='',
+                                   bold=True,
+                                   size_hint=(.5, .5),
+                                   font_size=140,
+                                   pos_hint={'center_x': .5, 'center_y': .55})
         options_layout.add_widget(self.cum_pnl_label)
+        self.update_cum_pnl_label()
 
         self.main_layout.add_widget(options_layout)
 
