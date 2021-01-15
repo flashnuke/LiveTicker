@@ -146,7 +146,7 @@ class MainApp(App):
         self.popup_settings = Popup(title='Settings',
                                     size_hint=(0.5, 0.5),
                                     background='icons/secondary_background.png',
-                                    background_color=[0, 0, 0, .5])
+                                    background_color=[1, 1, 1, .5])
 
         self.symbols_dropdown = DropDown(max_height=650)
         for symbol in self.price_fetcher.get_all_symbols():
