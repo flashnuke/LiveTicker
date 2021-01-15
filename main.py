@@ -98,7 +98,7 @@ class MainApp(App):
                                   size_hint=(.5, .5),
                                   font_size=100,
                                   pos_hint={'center_x': .5, 'center_y': .5},
-                                  color=(237/255, 142/255, 43/255, 0.2))
+                                  color=(237/255, 142/255, 43/255, 0.4))
         self.main_layout.add_widget(self.symbol_label)  # add price label
         self.update_symbol_label()
 
