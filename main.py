@@ -143,12 +143,13 @@ class MainApp(App):
 
         self.start_ticker(self._SYM)
 
-        self.popup_settings = Popup(title='Settings',  # todo: content=
-                                    size_hint=(0.5, 0.5))
+        self.popup_settings = Popup(title='Settings',
+                                    size_hint=(0.5, 0.5),
+                                    background_color=[0, 0, 0, .9])
 
         self.symbols_dropdown = DropDown(max_height=650)
         for symbol in self.price_fetcher.get_all_symbols():
-            symbol_button = Button(text=symbol.upper(), size_hint_y=None, height=150)
+            symbol_button = Button(text=symbol.upper(), size_hint_y=None, height=125)
             symbol_button.bind(on_release=lambda symbol_button: self.symbols_dropdown.select(symbol_button.text))
             self.symbols_dropdown.add_widget(symbol_button)
 
