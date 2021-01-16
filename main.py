@@ -221,19 +221,15 @@ class MainApp(App):
                 self.button_refresh.background_down = 'icons/refresh_icon_dark.png'
                 self.button_settings.background_normal = 'icons/settings_icon_dark.png'
                 self.button_settings.background_down = 'icons/settings_icon_dark.png'
-                # Rectangle(size=(9999, 9999))
                 self.main_layout.canvas.before.clear()
 
-        if not float(self.entry_price_label.text):  # if no entry price
-            self.entry_price_label.color = self._TEXT_COLOR_LIGHTMODE if \
-                self.current_display_mode else self._TEXT_COLOR_DARKMODE
+        self.entry_price_label.color = self._TEXT_COLOR_LIGHTMODE if self.current_display_mode else \
+            self._TEXT_COLOR_DARKMODE
         if self.pnl_label.text == self.zero_pnl:  # if zero pnl
             self.pnl_label.color = self._TEXT_COLOR_LIGHTMODE if self.current_display_mode else \
                 self._TEXT_COLOR_DARKMODE
         self.update_cum_pnl_label()
         self.update_position_label()
-
-
 
     def start_ticker(self, symbol: str):
         """
