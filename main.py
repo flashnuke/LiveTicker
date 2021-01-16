@@ -72,6 +72,7 @@ class MainApp(App):
                 button_settings - a button to open settings menu
                     popup_settings - a popup window for settings
                         symbols_list -  dropdown list for symbols
+                        button_display_mode - toggle view mode (dark or light)
                 cum_pnl_label
             position_buttons_layout
                 button_buy
@@ -201,11 +202,13 @@ class MainApp(App):
         sets 0 for dark mode, 1 for light mode
         """
         mode = 0 if self.current_display_mode else 1
-        print(mode)
+
+        self.current_display_mode = mode
         self.button_display_mode.text = self.display_mode_mapping[mode]
 
         with self.main_layout.canvas.before:
-            if mode:
+
+            if mode == 1:
                 Color(self._LIGHT_MODE_RGB)
                 self.button_refresh.background_normal = 'icons/refresh_icon_light.png'
                 self.button_refresh.background_down = 'icons/refresh_icon_light.png'
@@ -218,14 +221,19 @@ class MainApp(App):
                 self.button_refresh.background_down = 'icons/refresh_icon_dark.png'
                 self.button_settings.background_normal = 'icons/settings_icon_dark.png'
                 self.button_settings.background_down = 'icons/settings_icon_dark.png'
+                # Rectangle(size=(9999, 9999))
+                self.main_layout.canvas.before.clear()
 
         if not float(self.entry_price_label.text):  # if no entry price
             self.entry_price_label.color = self._TEXT_COLOR_LIGHTMODE if \
-                self.current_display_mode else self._DARK_MODE_RGB
+                self.current_display_mode else self._TEXT_COLOR_DARKMODE
+        if self.pnl_label.text == self.zero_pnl:  # if zero pnl
+            self.pnl_label.color = self._TEXT_COLOR_LIGHTMODE if self.current_display_mode else \
+                self._TEXT_COLOR_DARKMODE
         self.update_cum_pnl_label()
         self.update_position_label()
 
-        self.current_display_mode = mode
+
 
     def start_ticker(self, symbol: str):
         """
@@ -341,7 +349,7 @@ class MainApp(App):
     def reset_pnl(self):
         """Reset pnl label"""
         self.pnl_label.text = self.zero_pnl
-        self.pnl_label.color = self._TEXT_COLOR_LIGHTMODE if self.current_display_mode else self._DARK_MODE_RGB
+        self.pnl_label.color = self._TEXT_COLOR_LIGHTMODE if self.current_display_mode else self._TEXT_COLOR_DARKMODE
 
     def on_price_update(self, price):
         """
@@ -397,7 +405,8 @@ class MainApp(App):
         elif self.current_position < 0:
             self.pos_str_label.color = get_color_from_hex("#b80000")
         else:
-            self.pos_str_label.color = self._TEXT_COLOR_LIGHTMODE if self.current_display_mode else self._DARK_MODE_RGB
+            self.pos_str_label.color = self._TEXT_COLOR_LIGHTMODE if self.current_display_mode else \
+                self._TEXT_COLOR_DARKMODE
 
     def update_cum_pnl_label(self):
         """
@@ -409,7 +418,8 @@ class MainApp(App):
         elif self.cumulative_pnl < 0:
             self.cum_pnl_label.color = get_color_from_hex("#b80000")
         else:
-            self.cum_pnl_label.color = self._TEXT_COLOR_LIGHTMODE if self.current_display_mode else self._DARK_MODE_RGB
+            self.cum_pnl_label.color = self._TEXT_COLOR_LIGHTMODE if self.current_display_mode \
+                else self._TEXT_COLOR_DARKMODE
 
 
 if __name__ == "__main__":
