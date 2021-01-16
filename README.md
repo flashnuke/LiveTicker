@@ -24,3 +24,24 @@ Compiled by buildozer
 
 ## general notes
 * added the SSL certificate as an env var
+
+# Supported tickers
+"AAVEUSDT",
+"AAVEBTC",
+"ADAUSDT",
+"AVABTC",
+"BCHUSDT",
+"BTCBTC",
+"BNBUSDT",
+"BNBBTC",
+"BTCUSDT",
+"DOTUSDT",
+"DOTBTC",
+"ETHUSDT",
+"ETHBTC",
+"LINKUSDT",
+"LINKBTC",
+"LTCUSDT",
+"LTCBTC",
+"XRPUSDT",
+"XRPBTC"
