@@ -177,7 +177,7 @@ class MainApp(App):
             self.symbols_dropdown.add_widget(symbol_button)
 
         self.main_symbol_button = Button(text=self._SYM.upper(),
-                                         size_hint=(0.5, 0.2),
+                                         size=(100, 100),
                                          pos_hint={'center_x': .5, 'center_y': .8})
         self.main_symbol_button.bind(on_release=self.symbols_dropdown.open)
         self.symbols_dropdown.bind(on_select=self.change_ticker)
@@ -185,8 +185,8 @@ class MainApp(App):
         self.settings_buttons.add_widget(self.main_symbol_button)
 
         self.button_display_mode = Button(text='',
-                                          size_hint=(0.5, 0.2),
-                                          pos_hint={'center_x': .5, 'center_y': .8})
+                                          size=(1, 1),
+                                          pos_hint={'center_x': .5, 'center_y': .5})
         self.button_display_mode.bind(on_press=self.set_display_mode)
         self.settings_buttons.add_widget(self.button_display_mode)
 
