@@ -10,6 +10,7 @@ from functools import lru_cache
 
 class Binance:
     """
+    _SUPPORTED_TICKERS - all supported tickers at the time being
     _BASE_REST - base for REST path
     _BASE_WS - base for WS path
 
@@ -17,6 +18,28 @@ class Binance:
     _ticker_precision - quote precision for all tickers
     _connected_tickers - all currenctly connected tickers
     """
+
+    _SUPPORTED_TICKERS = {
+        "AAVEUSDT",
+        "AAVEBTC",
+        "ADAUSDT",
+        "AVABTC",
+        "BCHUSDT",
+        "BTCBTC",
+        "BNBUSDT",
+        "BNBBTC",
+        "BTCUSDT",
+        "DOTUSDT",
+        "DOTBTC",
+        "ETHUSDT",
+        "ETHBTC",
+        "LINKUSDT",
+        "LINKBTC",
+        "LTCUSDT",
+        "LTCBTC",
+        "XRPUSDT",
+        "XRPBTC"
+    }
 
     def __init__(self):
         self._BASE_REST = "https://api.binance.com"
@@ -42,7 +65,7 @@ class Binance:
         """
         all_symbols = self.get_symbols_rest()
         for symbol in all_symbols:
-            if symbol['status'] == "TRADING":
+            if symbol['status'] == "TRADING" and symbol['symbol'].upper() in self._SUPPORTED_TICKERS:
                 self._tickers[symbol['symbol']] = float()
                 for s_filter in symbol['filters']:
                     if s_filter['filterType'] == 'PRICE_FILTER':
@@ -60,17 +83,23 @@ class Binance:
     async def stream_manager(self, symbol: str, cb_func):
         """
         manage the stream
+        set up the initial price using a REST call
+
         """
         full_path = self._BASE_WS + f"/stream?streams={symbol.lower()}@aggTrade"
         os.environ['SSL_CERT_FILE'] = certifi.where()  # set ssl certificate
+
+        initial_price = self.get_price_rest(symbol)
+        cb_func(initial_price)
 
         async with websockets.connect(full_path) as ws:
             while symbol.upper() in self._connected_tickers:
                 try:
                     result = await ws.recv()
-                    result = json.loads(result)
-                    self.trade_stream_parser(result['data'])
-                    cb_func(self._tickers[symbol.upper()])
+                    if symbol.upper() in self._connected_tickers:  # a second check to avoid lags
+                        result = json.loads(result)
+                        self.trade_stream_parser(result['data'])
+                        cb_func(self._tickers[symbol.upper()])
 
                 except ConnectionAbortedError:
                     print(f"Exception '{ConnectionAbortedError.__name__}' in re-establishing ws")
@@ -120,7 +149,7 @@ class Binance:
         """
         Fetches price using REST
         """
-        return float(requests.get(self._BASE_REST + f"/api/v3/avgPrice?symbol={symbol.upper()}").json()["price"])
+        return float(requests.get(self._BASE_REST + f"/api/v3/ticker/price?symbol={symbol.upper()}").json()["price"])
 
     def get_symbols_rest(self):
         """

@@ -205,7 +205,6 @@ class MainApp(App):
 
         self._SYM = new_symbol
         self.update_symbol_label()
-        self.on_price_update(self.price_fetcher.fetch_price(self._SYM, use_rest=True))
         self.start_ticker(new_symbol)
         self.main_symbol_button.text = new_symbol
 
