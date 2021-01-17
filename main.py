@@ -19,7 +19,7 @@ from time import sleep
 class MainApp(App):
     """
     _EX = exchange (for now hard coded to 'Binance')
-    _SYM = symbol (for now hard coded to 'btcusdt')
+    _SYM = symbol (for now default is'btcusdt')
     _DARK_MODE_RGB = RGB for dark mode
     _LIGHT_MODE_RGB = RGB for light mode
     _DEF_MODE = default view mode
@@ -31,6 +31,7 @@ class MainApp(App):
     cumulative_pnl - PnL of all positions
     current_pnl - PnL of current position being held
     position_mapping - convert from int to str representation of position type
+    display_mode_mapping - convert from integer to str representation of display mode
     """
     _EX = "Binance"
     _SYM = "BTCUSDT"
