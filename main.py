@@ -63,11 +63,10 @@ class MainApp(App):
     }
 
     _GIT_URL = "https://github.com/adanikel"
-    about_info = f'This is an open source game designed to\n' \
-                 f'simulate real-life trading by fetching a live price feed\n' \
+    about_info = f'This is an open source game designed to' \
+                 f'simulate real-life trading by fetching a live price feed' \
                  f'of top exchange (currently only Binance is supported).' \
-                 f'\n' \
-                 f'\n' \
+                 f'\n\n\n' \
                  f'Made by [ref=https://github.com/adanikel][color=0000ff]adanikel[/color][/ref]'
 
     def build(self):
@@ -199,9 +198,7 @@ class MainApp(App):
         self.button_display_mode.bind(on_press=self.set_display_mode)
         self.settings_buttons.add_widget(self.button_display_mode)
 
-
         self.about_label = Label(text=self.about_info,
-                                 # size_hint=(0.5, 0.5),
                                  markup=True,
                                  on_ref_press=self.on_ref_press,
                                  pos_hint={'center_x': .5, 'center_y': 1})
