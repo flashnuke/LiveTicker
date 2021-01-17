@@ -57,9 +57,17 @@ class MainApp(App):
     }
 
     display_mode_mapping = {
-        0: "Dark Mode",
-        1: "Light Mode"
+        0: 'Dark Mode',
+        1: 'Light Mode'
     }
+
+    _GIT_URL = "https://github.com/adanikel"
+    about_info = f'This is an open source game designed to\n' \
+                 f'simulate real-life trading by fetching a live price feed\n' \
+                 f'of top exchange (currently only Binance is supported).' \
+                 f'\n' \
+                 f'\n' \
+                 f'Made by [ref=https://github.com/adanikel][color=0000ff]adanikel[/color][/ref]'
 
     def build(self):
         """
@@ -170,7 +178,7 @@ class MainApp(App):
                                     size_hint=(0.5, 0.5),
                                     background='icons/secondary_background.png',
                                     background_color=[1, 1, 1, .5])
-        self.settings_buttons = BoxLayout(orientation="vertical", padding=[0, 0, 0, 900])  # in pc, use 200
+        self.settings_buttons = BoxLayout(orientation="vertical", padding=[0, 0, 0, 100])  # in pc, use 200
 
         self.symbols_dropdown = DropDown(max_height=650)
         for symbol in self.price_fetcher.get_all_symbols():
@@ -179,7 +187,6 @@ class MainApp(App):
             self.symbols_dropdown.add_widget(symbol_button)
 
         self.main_symbol_button = Button(text=self._SYM.upper(),
-                                         # size=(100, 100),
                                          pos_hint={'center_x': .5, 'center_y': .8})
         self.main_symbol_button.bind(on_release=self.symbols_dropdown.open)
         self.symbols_dropdown.bind(on_select=self.change_ticker)
@@ -187,10 +194,22 @@ class MainApp(App):
         self.settings_buttons.add_widget(self.main_symbol_button)
 
         self.button_display_mode = Button(text='',
-                                          # size=(1, 1),
                                           pos_hint={'center_x': .5, 'center_y': .5})
         self.button_display_mode.bind(on_press=self.set_display_mode)
         self.settings_buttons.add_widget(self.button_display_mode)
+
+        self.about_window = Popup(title='About',
+                                  size_hint=(0.5, 0.5),
+                                  background_color=[1, 1, 1, .5])
+        self.about_label = Label(text=self.about_info,
+                                 size_hint=(0.5, 0.5),
+                                 markup=True)
+        self.about_window.add_widget(self.about_label)
+
+        self.button_about = Button(text='About',
+                                   pos_hint={'center_x': .5, 'center_y': .5})
+        self.button_about.bind(on_press=self.on_press_about)
+        self.settings_buttons.add_widget(self.button_about)
 
         self.popup_settings.add_widget(self.settings_buttons)
 
@@ -265,6 +284,12 @@ class MainApp(App):
         self.update_symbol_label()
         self.start_ticker(new_symbol)
         self.main_symbol_button.text = new_symbol
+
+    def on_press_about(self, instance):
+        """
+        Open `about` popup window
+        """
+        self.about_window.open()
 
     def on_press_sell(self, instance):
         """
