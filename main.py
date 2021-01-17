@@ -198,14 +198,16 @@ class MainApp(App):
         self.button_display_mode.bind(on_press=self.set_display_mode)
         self.settings_buttons.add_widget(self.button_display_mode)
 
-        self.about_window = Popup(title='About',
-                                  size_hint=(0.5, 0.5),
-                                  background_color=[1, 1, 1, .5])
+
         self.about_label = Label(text=self.about_info,
                                  # size_hint=(0.5, 0.5),
                                  markup=True,
                                  on_ref_press=self.on_ref_press)
-        self.about_window.add_widget(self.about_label)
+        # self.about_window.add_widget(self.about_label)
+        self.about_window = Popup(title='About',
+                                  size_hint=(0.5, 0.5),
+                                  background_color=[1, 1, 1, .5],
+                                  content=self.about_label)
 
         self.button_about = Button(text='About',
                                    pos_hint={'center_x': .5, 'center_y': .5})
@@ -247,6 +249,7 @@ class MainApp(App):
 
         self.entry_price_label.color = self._TEXT_COLOR_LIGHTMODE if self.current_display_mode else \
             self._TEXT_COLOR_DARKMODE
+
         if self.pnl_label.text == self.zero_pnl:  # if zero pnl
             self.pnl_label.color = self._TEXT_COLOR_LIGHTMODE if self.current_display_mode else \
                 self._TEXT_COLOR_DARKMODE
