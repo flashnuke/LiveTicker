@@ -69,7 +69,7 @@ class MainApp(App):
     _GIT_URL = "https://github.com/adanikel"
     about_info = f'This is an open source game designed to ' \
                  f'simulate real-life trading by fetching a live price feed ' \
-                 f'of top exchange (currently only Binance is supported).' \
+                 f'from top crypto exchanges (currently only Binance is supported).' \
                  f'\n\n\n' \
                  f'Made by [ref={_GIT_URL}][color=0000ff]adanikel[/color][/ref]'
 
