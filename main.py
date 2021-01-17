@@ -31,8 +31,12 @@ class MainApp(App):
     zero_pnl - macro string used to reset PnL
     cumulative_pnl - PnL of all positions
     current_pnl - PnL of current position being held
+
     position_mapping - convert from int to str representation of position type
     display_mode_mapping - convert from integer to str representation of display mode
+
+    _GIT_URL -  the developer's GITHUB url
+    about_info - the text to be displayed in the about window
     """
     _EX = "Binance"
     _SYM = "BTCUSDT"
@@ -63,11 +67,11 @@ class MainApp(App):
     }
 
     _GIT_URL = "https://github.com/adanikel"
-    about_info = f'This is an open source game designed to' \
-                 f'simulate real-life trading by fetching a live price feed' \
+    about_info = f'This is an open source game designed to ' \
+                 f'simulate real-life trading by fetching a live price feed ' \
                  f'of top exchange (currently only Binance is supported).' \
                  f'\n\n\n' \
-                 f'Made by [ref=https://github.com/adanikel][color=0000ff]adanikel[/color][/ref]'
+                 f'Made by [ref={_GIT_URL}][color=0000ff]adanikel[/color][/ref]'
 
     def build(self):
         """
