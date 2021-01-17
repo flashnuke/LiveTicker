@@ -23,7 +23,7 @@ class Binance:
         "AAVEUSDT",
         "AAVEBTC",
         "ADAUSDT",
-        "AVABTC",
+        "ADABTC",
         "BCHUSDT",
         "BTCBTC",
         "BNBUSDT",
