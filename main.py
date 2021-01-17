@@ -202,8 +202,9 @@ class MainApp(App):
                                   size_hint=(0.5, 0.5),
                                   background_color=[1, 1, 1, .5])
         self.about_label = Label(text=self.about_info,
-                                 size_hint=(0.5, 0.5),
-                                 markup=True)
+                                 # size_hint=(0.5, 0.5),
+                                 markup=True,
+                                 on_ref_press=self.on_ref_press)
         self.about_window.add_widget(self.about_label)
 
         self.button_about = Button(text='About',
@@ -290,6 +291,14 @@ class MainApp(App):
         Open `about` popup window
         """
         self.about_window.open()
+
+    @staticmethod
+    def on_ref_press(*args):
+        """
+        open ref link
+        """
+        import webbrowser
+        webbrowser.open(args[1])
 
     def on_press_sell(self, instance):
         """
