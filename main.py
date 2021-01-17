@@ -9,6 +9,7 @@ from kivy.utils import get_color_from_hex
 from PriceFetcher import Fetcher
 from threading import Thread
 from time import sleep
+import webbrowser
 
 
 # from kivy.config import Config
@@ -203,7 +204,7 @@ class MainApp(App):
                                  # size_hint=(0.5, 0.5),
                                  markup=True,
                                  on_ref_press=self.on_ref_press,
-                                 pos_hint={'center_x': 0.5, 'center_y': 0.5})
+                                 pos_hint={'center_x': .5, 'center_y': 1})
         self.about_label.bind(size=lambda s, w: s.setter('text_size')(s, w))  # to limit text into popup
 
         self.about_window = Popup(title='About',
@@ -302,7 +303,6 @@ class MainApp(App):
         """
         open ref link
         """
-        import webbrowser
         webbrowser.open(args[1])
 
     def on_press_sell(self, instance):
