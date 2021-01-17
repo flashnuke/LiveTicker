@@ -10,6 +10,7 @@ from PriceFetcher import Fetcher
 from threading import Thread
 from time import sleep
 
+
 # from kivy.config import Config
 # Config.set('graphics', 'width', '412')
 # Config.set('graphics', 'height', '915')
@@ -35,7 +36,7 @@ class MainApp(App):
     _SYM = "BTCUSDT"
     _DARK_MODE_RGB = (0, 0, 0)
     _TEXT_COLOR_DARKMODE = get_color_from_hex("#ffffff")
-    _LIGHT_MODE_RGB = (227/255, 214/255, 177/255)
+    _LIGHT_MODE_RGB = (227 / 255, 214 / 255, 177 / 255)
     _TEXT_COLOR_LIGHTMODE = get_color_from_hex("#000000")
     _DEF_MODE = 1
     current_display_mode = _DEF_MODE
@@ -114,7 +115,7 @@ class MainApp(App):
                                   size_hint=(.5, .5),
                                   font_size=100,
                                   pos_hint={'center_x': .5, 'center_y': .5},
-                                  color=(237/255, 142/255, 43/255, 0.4))
+                                  color=(237 / 255, 142 / 255, 43 / 255, 0.4))
         self.main_layout.add_widget(self.symbol_label)  # add price label
 
         options_layout = BoxLayout(orientation="horizontal",
@@ -168,7 +169,7 @@ class MainApp(App):
                                     size_hint=(0.5, 0.5),
                                     background='icons/secondary_background.png',
                                     background_color=[1, 1, 1, .5])
-        self.settings_buttons = BoxLayout(orientation="vertical")
+        self.settings_buttons = BoxLayout(orientation="vertical", padding=[0, 0, 0, 200])
 
         self.symbols_dropdown = DropDown(max_height=650)
         for symbol in self.price_fetcher.get_all_symbols():
@@ -177,7 +178,7 @@ class MainApp(App):
             self.symbols_dropdown.add_widget(symbol_button)
 
         self.main_symbol_button = Button(text=self._SYM.upper(),
-                                         size=(100, 100),
+                                         # size=(100, 100),
                                          pos_hint={'center_x': .5, 'center_y': .8})
         self.main_symbol_button.bind(on_release=self.symbols_dropdown.open)
         self.symbols_dropdown.bind(on_select=self.change_ticker)
@@ -185,7 +186,7 @@ class MainApp(App):
         self.settings_buttons.add_widget(self.main_symbol_button)
 
         self.button_display_mode = Button(text='',
-                                          size=(1, 1),
+                                          # size=(1, 1),
                                           pos_hint={'center_x': .5, 'center_y': .5})
         self.button_display_mode.bind(on_press=self.set_display_mode)
         self.settings_buttons.add_widget(self.button_display_mode)
@@ -210,17 +211,17 @@ class MainApp(App):
 
             if mode == 1:
                 Color(self._LIGHT_MODE_RGB)
-                self.button_refresh.background_normal = 'icons/refresh_icon_light.png'
-                self.button_refresh.background_down = 'icons/refresh_icon_light.png'
-                self.button_settings.background_normal = 'icons/settings_icon_light.png'
-                self.button_settings.background_down = 'icons/settings_icon_light.png'
+                self.button_refresh.background_normal = 'icons/light_mode/refresh_icon_light.png'
+                self.button_refresh.background_down = 'icons/light_mode/refresh_icon_light.png'
+                self.button_settings.background_normal = 'icons/light_mode/settings_icon_light.png'
+                self.button_settings.background_down = 'icons/light_mode/settings_icon_light.png'
                 Rectangle(size=(9999, 9999))
             else:
                 Color(self._DARK_MODE_RGB)
-                self.button_refresh.background_normal = 'icons/refresh_icon_dark.png'
-                self.button_refresh.background_down = 'icons/refresh_icon_dark.png'
-                self.button_settings.background_normal = 'icons/settings_icon_dark.png'
-                self.button_settings.background_down = 'icons/settings_icon_dark.png'
+                self.button_refresh.background_normal = 'icons/dark_mode/refresh_icon_dark.png'
+                self.button_refresh.background_down = 'icons/dark_mode/refresh_icon_dark.png'
+                self.button_settings.background_normal = 'icons/dark_mode/settings_icon_dark.png'
+                self.button_settings.background_down = 'icons/dark_mode/settings_icon_dark.png'
                 self.main_layout.canvas.before.clear()
 
         self.entry_price_label.color = self._TEXT_COLOR_LIGHTMODE if self.current_display_mode else \
