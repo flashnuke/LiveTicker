@@ -178,7 +178,7 @@ class MainApp(App):
                                     size_hint=(0.5, 0.5),
                                     background='icons/secondary_background.png',
                                     background_color=[1, 1, 1, .5])
-        self.settings_buttons = BoxLayout(orientation="vertical", padding=[0, 0, 0, 100])  # in pc, use 200
+        self.settings_buttons = BoxLayout(orientation="vertical", padding=[0, 0, 0, 800])  # in pc, use 200
 
         self.symbols_dropdown = DropDown(max_height=650)
         for symbol in self.price_fetcher.get_all_symbols():
@@ -202,8 +202,10 @@ class MainApp(App):
         self.about_label = Label(text=self.about_info,
                                  # size_hint=(0.5, 0.5),
                                  markup=True,
-                                 on_ref_press=self.on_ref_press)
-        # self.about_window.add_widget(self.about_label)
+                                 on_ref_press=self.on_ref_press,
+                                 pos_hint={'center_x': 0.5, 'center_y': 0.5})
+        self.about_label.bind(size=lambda s, w: s.setter('text_size')(s, w))  # to limit text into popup
+
         self.about_window = Popup(title='About',
                                   size_hint=(0.5, 0.5),
                                   background_color=[1, 1, 1, .5],
