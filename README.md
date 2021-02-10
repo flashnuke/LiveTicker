@@ -1,7 +1,5 @@
 # LiveTicker
-Live price ticker game\
-Supports all SPOT pairs on Binance
-
+Live price ticker game
 
 basically starts a live price feed on the btc/usdt pair on Binance and allows to demo-trade using buy and sell buttons.
 The PnL of the current position is calculated in the second row, while the total PnL of all positions is calculated at the bottom of the screen.
