@@ -102,14 +102,14 @@ class MainApp(App, Widget):
         self.main_layout.add_widget(Pulser.bg_pulser)
         with self.main_layout.canvas:
             Rectangle(source="icons/lightning.png", size=(1450, 1450), pos=(0, 550))
-            
+
         self.symbol_label = Label(text='',
                                   bold=True,
                                   size_hint=(.5, .5),
                                   font_size=100,
-                                  pos_hint={'center_x': .5, 'center_y': .5},
+                                  pos_hint={'center_x': .5, 'center_y': 1},
                                   color=(237 / 255, 142 / 255, 43 / 255, 0.4))
-        self.main_layout.add_widget(self.symbol_label)  # add price label
+        # self.main_layout.add_widget(self.symbol_label)  # add price label
 
         self.price_label = Label(text='0.0',
                                  bold=True,
