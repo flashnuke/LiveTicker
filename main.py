@@ -6,47 +6,18 @@ from kivy.uix.dropdown import DropDown
 from kivy.uix.boxlayout import BoxLayout
 from kivy.graphics import Color, Rectangle
 from kivy.utils import get_color_from_hex
-from kivy.animation import Animation
-from kivy.clock import Clock
-from kivy.lang import Builder
-from kivy.properties import ObjectProperty
 from kivy.uix.widget import Widget
 from PriceFetcher import Fetcher
 from threading import Thread
 from time import sleep
 import webbrowser
 
+from utils import Pulser
 
 # from kivy.config import Config
 # Config.set('graphics', 'width', '412')
 # Config.set('graphics', 'height', '915')
 
-class Pulser(Widget):
-    bg_color = ObjectProperty([1, 1, 1, 1])
-
-    def __init__(self, **kwargs):
-        super(Pulser, self).__init__(**kwargs)
-        Clock.schedule_once(self.start_pulsing, 2)
-
-    def start_pulsing(self, *args):
-        anim = Animation(bg_color=[1,0,0,1]) + Animation(bg_color=[0,0,0,0])
-        anim.repeat = True
-        anim.start(self)
-
-theRoot = Builder.load_string('''
-Pulser:
-    canvas.before:
-        Color:
-            rgba: self.bg_color
-        Rectangle:
-            pos: (0, 0)
-            size: (9999, 9999)
-
-''')
-
-class PulserApp(App):
-    def build(self):
-        return theRoot
 
 class MainApp(App, Widget):
     """
@@ -125,9 +96,9 @@ class MainApp(App, Widget):
         """
         self.main_layout = BoxLayout(orientation="vertical")
 
-        self.main_layout.add_widget(theRoot)
+        self.main_layout.add_widget(Pulser.bg_pulser)
         with self.main_layout.canvas:
-            Rectangle(source="lightning.png", size=(800, 800), pos=(0, 200))
+            Rectangle(source="icons/lightning.png", size=(800, 800), pos=(0, 200))
 
         self.price_label = Label(text='0.0',
                                  bold=True,
@@ -217,7 +188,7 @@ class MainApp(App, Widget):
                                     size_hint=(0.5, 0.5),
                                     background='icons/secondary_background.png',
                                     background_color=[1, 1, 1, .5])
-        self.settings_buttons = BoxLayout(orientation="vertical", padding=[0, 0, 0, 200])  # in pc, use 200
+        self.settings_buttons = BoxLayout(orientation="vertical", padding=[0, 0, 0, 800])  # in pc, use 200
 
         self.symbols_dropdown = DropDown(max_height=650)
         for symbol in self.price_fetcher.get_all_symbols():
