@@ -49,6 +49,9 @@ class MainApp(App, Widget):
     _DEF_MODE = 1
     current_display_mode = _DEF_MODE
 
+    _GREEN_HEX = "#00b82b"
+    _RED_HEX = "#b80000"
+
     price_fetcher = Fetcher(_EX)
     current_position = int()
     entry_price = float()
@@ -404,9 +407,9 @@ class MainApp(App, Widget):
         precision = self.price_fetcher.get_symbol_precision(self._SYM)
         self.price_label.text = f'{price:.{precision}f}'
         if price > self.last_price:
-            self.price_label.color = get_color_from_hex("#00b82b")
+            self.price_label.color = get_color_from_hex(self._GREEN_HEX)
         else:
-            self.price_label.color = get_color_from_hex("#b80000")
+            self.price_label.color = get_color_from_hex(self._RED_HEX)
 
         self.last_price = price
 
@@ -421,9 +424,9 @@ class MainApp(App, Widget):
 
             self.pnl_label.text = str(f"{self.current_pnl}%")
             if self.current_pnl > 0:
-                self.pnl_label.color = get_color_from_hex("#00b82b")
+                self.pnl_label.color = get_color_from_hex(self._GREEN_HEX)
             elif self.current_pnl < 0:
-                self.pnl_label.color = get_color_from_hex("#b80000")
+                self.pnl_label.color = get_color_from_hex(self._RED_HEX)
             else:
                 self.reset_pnl()
 
@@ -446,9 +449,9 @@ class MainApp(App, Widget):
         """
         self.pos_str_label.text = self.position_mapping[self.current_position]
         if self.current_position > 0:
-            self.pos_str_label.color = get_color_from_hex("#00b82b")
+            self.pos_str_label.color = get_color_from_hex(self._GREEN_HEX)
         elif self.current_position < 0:
-            self.pos_str_label.color = get_color_from_hex("#b80000")
+            self.pos_str_label.color = get_color_from_hex(self._RED_HEX)
         else:
             self.pos_str_label.color = self._TEXT_COLOR_LIGHTMODE if self.current_display_mode else \
                 self._TEXT_COLOR_DARKMODE
@@ -459,9 +462,9 @@ class MainApp(App, Widget):
         """
         self.cum_pnl_label.text = f"{round(self.cumulative_pnl, 2)}%"
         if self.cumulative_pnl > 0:
-            self.cum_pnl_label.color = get_color_from_hex("#00b82b")
+            self.cum_pnl_label.color = get_color_from_hex(self._GREEN_HEX)
         elif self.cumulative_pnl < 0:
-            self.cum_pnl_label.color = get_color_from_hex("#b80000")
+            self.cum_pnl_label.color = get_color_from_hex(self._RED_HEX)
         else:
             self.cum_pnl_label.color = self._TEXT_COLOR_LIGHTMODE if self.current_display_mode \
                 else self._TEXT_COLOR_DARKMODE
