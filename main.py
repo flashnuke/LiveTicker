@@ -101,7 +101,7 @@ class MainApp(App, Widget):
 
         self.main_layout.add_widget(Pulser.bg_pulser)
         with self.main_layout.canvas:
-            Rectangle(source="icons/lightning.png", size=(800, 800), pos=(0, 200))
+            Rectangle(source="icons/lightning.png", size=(1600, 1600), pos=(0, 800))
 
         self.price_label = Label(text='0.0',
                                  bold=True,
@@ -233,7 +233,6 @@ class MainApp(App, Widget):
         self.reset_pnl()  # for display mode text
 
         return self.main_layout
-
 
     def set_display_mode(self, instance):
         """
