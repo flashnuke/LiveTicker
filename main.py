@@ -110,6 +110,14 @@ class MainApp(App, Widget):
                                  pos_hint={'center_x': .5, 'center_y': .9})
         self.main_layout.add_widget(self.price_label)  # add price label
 
+        self.symbol_label = Label(text='',
+                                  bold=True,
+                                  size_hint=(.5, .5),
+                                  font_size=100,
+                                  pos_hint={'center_x': .5, 'center_y': .5},
+                                  color=(237 / 255, 142 / 255, 43 / 255, 0.4))
+        self.main_layout.add_widget(self.symbol_label)  # add price label
+
         self.pnl_label = Label(text=self.zero_pnl,
                                bold=True,
                                size_hint=(.5, .5),
@@ -131,14 +139,6 @@ class MainApp(App, Widget):
                                        pos_hint={'center_x': .5, 'center_y': .9})
         entry_price_status_layout.add_widget(self.entry_price_label)  # add price label
         self.main_layout.add_widget(entry_price_status_layout)
-
-        self.symbol_label = Label(text='',
-                                  bold=True,
-                                  size_hint=(.5, .5),
-                                  font_size=100,
-                                  pos_hint={'center_x': .5, 'center_y': .5},
-                                  color=(237 / 255, 142 / 255, 43 / 255, 0.4))
-        self.main_layout.add_widget(self.symbol_label)  # add price label
 
         options_layout = BoxLayout(orientation="horizontal",
                                    # padding=[200, 100, 100, 100],
@@ -231,6 +231,7 @@ class MainApp(App, Widget):
 
         self.set_display_mode(None)
         self.reset_pnl()  # for display mode text
+        self.update_symbol_label()  # set up label
 
         return self.main_layout
 
