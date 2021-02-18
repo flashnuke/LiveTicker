@@ -108,7 +108,7 @@ class MainApp(App, Widget):
                                   font_size=100,
                                   pos_hint={'center_x': .5, 'center_y': 1},
                                   color=(237 / 255, 142 / 255, 43 / 255, 0.4))
-        # self.main_layout.add_widget(self.symbol_label)  # add price label
+        self.main_layout.add_widget(self.symbol_label)  # add price label
 
         self.price_label = Label(text='0.0',
                                  bold=True,
