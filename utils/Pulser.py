@@ -9,6 +9,7 @@ class Pulser(Widget):
     _GREEN = [0.196, 0.8, 0.196, 0.4]
     _DURATION = 1.0
     bg_color = ObjectProperty(_RED)
+    size_hint = (.000001, .000001)
 
     def __init__(self, **kwargs):
         super(Pulser, self).__init__(**kwargs)
