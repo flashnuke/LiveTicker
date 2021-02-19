@@ -1,5 +1,5 @@
 import asyncio
-import aiohttp
+import requests as r
 from collections import deque
 from time import time
 
@@ -38,19 +38,18 @@ class NewsFetcher:
         make the request and parse response into deque
         save latest news id to avoid fetching the same over and over
         """
-        async with aiohttp.ClientSession() as session:
-            path = self.full_path + f"&minId={self.latest_id}"
-            async with await session.get(url=path) as res:
-                news = await res.json()
+        path = self.full_path + f"&minId={self.latest_id}"
+        request = r.get(url=path)
+        news = request.json()
 
-                for entry in news:
-                    news_id = int(entry['id'])
-                    self.latest_id = max(news_id, self.latest_id)
+        for entry in news:
+            news_id = int(entry['id'])
+            self.latest_id = max(news_id, self.latest_id)
 
-                    record = dict()
-                    record["news_id"] = news_id
-                    record["news_content"] = f"{entry['source']} -- {entry['headline']} -- {entry['summary']}"
-                    self.news_deque.append(record)
+            record = dict()
+            record["news_id"] = news_id
+            record["news_content"] = f"{entry['source']} -- {entry['headline']} -- {entry['summary']}"
+            self.news_deque.append(record)
 
     async def updates_pusher(self, cb_ptr, status):
         """
