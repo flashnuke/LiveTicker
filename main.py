@@ -218,7 +218,7 @@ class MainApp(App):
                                     background='icons/secondary_background.png',
                                     background_color=[1, 1, 1, .5],
                                     on_dismiss=self.save_user_data)
-        self.settings_buttons = BoxLayout(orientation="vertical", padding=[0, 0, 0, 100])  # in pc, use 100
+        self.settings_buttons = BoxLayout(orientation="vertical", padding=[0, 0, 0, 700])  # in pc, use 100
 
         self.symbols_dropdown = DropDown(max_height=650)
         for symbol in self.price_fetcher.get_all_symbols():
