@@ -28,6 +28,7 @@ class MainApp(App):
     _LIGHT_MODE_RGB = RGB for light mode
     _DEF_MODE = default view mode
     _DEFAULT_NEWS_MODE = default status for displaying news
+    _DEFAULT_FEES = default user fees
 
     current_position - current position being held (1 for long, -1 for short, 0 for none)
     entry_price - entry price for current position
@@ -50,6 +51,7 @@ class MainApp(App):
     _TEXT_COLOR_LIGHTMODE = get_color_from_hex("#000000")
     _DEF_MODE = 1
     _DEFAULT_NEWS_MODE = True
+    _DEFAULT_FEES = 0.0
     current_display_mode = _DEF_MODE
 
     _GREEN_HEX = "#00b82b"
@@ -97,8 +99,8 @@ class MainApp(App):
                     popup_settings - a popup window for settings
                         symbols_list -  dropdown list for symbols
                         button_display_mode - toggle view mode (dark or light)
-                        button_about - display about
                         button_news - turn on / off newsflash
+                        button_about - display about
                 cum_pnl_label
             position_buttons_layout
                 button_buy
@@ -203,7 +205,7 @@ class MainApp(App):
                                     size_hint=(0.5, 0.5),
                                     background='icons/secondary_background.png',
                                     background_color=[1, 1, 1, .5])
-        self.settings_buttons = BoxLayout(orientation="vertical", padding=[0, 0, 0, 200])  # in pc, use 200
+        self.settings_buttons = BoxLayout(orientation="vertical", padding=[0, 0, 0, 800])  # in pc, use 100
 
         self.symbols_dropdown = DropDown(max_height=650)
         for symbol in self.price_fetcher.get_all_symbols():
@@ -234,11 +236,6 @@ class MainApp(App):
                                   background_color=[1, 1, 1, .5],
                                   content=self.about_label)
 
-        self.button_about = Button(text='About',
-                                   pos_hint={'center_x': .5, 'center_y': .5})
-        self.button_about.bind(on_press=self.on_press_about)
-        self.settings_buttons.add_widget(self.button_about)
-
         self.news_status = self._DEFAULT_NEWS_MODE
         self.news_fetcher = NewsFetcher()
         self.button_news = Button(text=self.generate_news_button_text(),
@@ -246,6 +243,41 @@ class MainApp(App):
         self.button_news.bind(on_press=self.on_press_news)
         self.settings_buttons.add_widget(self.button_news)
         self.start_news_flasher()
+
+        self.user_fees = self._DEFAULT_FEES
+        self.fees_layout = BoxLayout(orientation='horizontal',
+                                     padding=[10, 0, 10, 0])
+        self.fees_label = Label(text='',
+                                pos_hint={'center_x': .9, 'center_y': .9},
+                                size_hint=(0.1, 0.1))
+        self.update_fees_label()
+        self.fees_layout.add_widget(self.fees_label)
+
+        self.fees_up = Button(text='+',
+                              pos_hint={'center_x': .9, 'center_y': .9},
+                                size_hint=(0.03, 0.1))
+        self.fees_up.bind(on_press=self.on_press_fees_up)
+        self.fees_layout.add_widget(self.fees_up)
+
+        self.fees_down = Button(text='-',
+                              pos_hint={'center_x': .9, 'center_y': .9},
+                                size_hint=(0.03, 0.1))
+        self.fees_down.bind(on_press=self.on_press_fees_down)
+        self.fees_layout.add_widget(self.fees_down)
+
+        self.fees_window = Popup(title='Fees',
+                                  size_hint=(0.5, 0.5),
+                                  background_color=[1, 1, 1, .5],
+                                  content=self.fees_layout)
+        self.button_fees = Button(text='Fees',
+                                  pos_hint={'center_x': .5, 'center_y': .5})
+        self.button_fees.bind(on_press=self.on_press_fees)
+        self.settings_buttons.add_widget(self.button_fees)
+
+        self.button_about = Button(text='About',
+                                   pos_hint={'center_x': .5, 'center_y': .5})
+        self.button_about.bind(on_press=self.on_press_about)
+        self.settings_buttons.add_widget(self.button_about)
 
         self.popup_settings.add_widget(self.settings_buttons)
 
@@ -365,9 +397,36 @@ class MainApp(App):
         """
         return f'Display news - {self.news_status}'
 
-    def on_press_about(self, instance):
+    def update_fees_label(self):
+        """
+        update fees button label
+        """
+        self.user_fees = round(self.user_fees, 2)
+        self.fees_label.text = f"{self.user_fees}"
+
+    def on_press_fees(self, instance):
         """
         Open `about` popup window
+        """
+        self.fees_window.open()
+
+    def on_press_fees_up(self, instance):
+        """
+        increments fees and updates label
+        """
+        self.user_fees += 0.01
+        self.update_fees_label()
+
+    def on_press_fees_down(self, instance):
+        """
+        decrements fees and updates label
+        """
+        self.user_fees -= 0.01
+        self.update_fees_label()
+
+    def on_press_about(self, instance):
+        """
+        Open `fees` popup window
         """
         self.about_window.open()
 
@@ -424,6 +483,12 @@ class MainApp(App):
         """
         self.popup_settings.open()
 
+    def apply_fees(self):
+        """
+        apply fees to pnl
+        """
+        self.current_pnl -= self.user_fees
+
     def reset_cum_pnl(self):
         """
         resets cumulative pnl
@@ -444,12 +509,12 @@ class MainApp(App):
 
     def reset_position(self):
         """
-        * updates cumulative pnl
+        * updates cumulative pnl (with fees)
         * resets position status
         * resets entry price
         * resets pos pnl
         """
-        self.cumulative_pnl += self.current_pnl
+        self.cumulative_pnl += (self.current_pnl - self.user_fees)
         self.current_position = 0
         self.entry_price = 0
         self.reset_pnl()
@@ -478,11 +543,13 @@ class MainApp(App):
     def update_pnl(self, price):
         """
         calculates current position PnL and updates the label accordingly
+        takes user fees into account
         """
         if self.current_position != 0:
-            self.current_pnl = self.entry_price / price
+            self.current_pnl = (self.entry_price / price)
             self.current_pnl = round((self.current_pnl - 1) * 100, 2) if self.current_position == -1 else \
                 round((1 - self.current_pnl) * 100, 2)
+            self.apply_fees()
 
             self.pnl_label.text = str(f"{self.current_pnl}%")
             if self.current_pnl > 0:

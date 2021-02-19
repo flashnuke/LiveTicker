@@ -17,6 +17,7 @@ class NewsFetcher:
     self.last_update - flag to maintain track of last fetch time
     self.main_eventloop - use the same event loop to avoid race condition
     self.latest_id - maintain track of latest news id to avoid fetching the same data
+    self.status - use this flag to kill manager loop
     """
 
     _K = "c0noo6v48v6t5mebkbl0"  # don't worry, this is a free k :)
