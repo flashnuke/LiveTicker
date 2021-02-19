@@ -22,14 +22,16 @@ from utils import Pulser
 
 class MainApp(App):
     """
-    _EX = exchange (for now hard coded to 'Binance')
-    _SYM = symbol (for now default is'btcusdt')
+    _DEF_EX = exchange (for now hard coded to 'Binance')
+    _DEF_SYM = symbol (for now default is 'btcusdt')
     _DARK_MODE_RGB = RGB for dark mode
     _LIGHT_MODE_RGB = RGB for light mode
     _DEF_MODE = default view mode
     _DEFAULT_NEWS_MODE = default status for displaying news
+    _DEF_CUM_PNL = default cumulative pnl
     _DEFAULT_FEES = default user fees
     _PNL_PERC = decimal percision for pnl display
+    _DEF_DATAJSON_NAME = json filename for user settings
 
     current_position - current position being held (1 for long, -1 for short, 0 for none)
     entry_price - entry price for current position
@@ -48,24 +50,23 @@ class MainApp(App):
     _TEXT_COLOR_DARKMODE = get_color_from_hex("#ffffff")
     _LIGHT_MODE_RGB = (227 / 255, 214 / 255, 177 / 255)
     _TEXT_COLOR_LIGHTMODE = get_color_from_hex("#000000")
-    _EX = "Binance"
-    _SYM = "BTCUSDT"
-    _DEF_DISP_MODE = 1
+    _DEF_EX = "Binance"
+    _DEF_SYM = "BTCUSDT"
+    _DEF_DISP_MODE = 0
     _DEFAULT_NEWS_MODE = True
+    _DEF_CUM_PNL = 0.0
     _DEFAULT_FEES = 0.0
     _PNL_PERC = 2
-    _DEF_DATAJSON_NAME = 'user_data'
-    current_display_mode = _DEF_DISP_MODE
+    _DEF_DATAJSON_NAME = "user_data"
 
     _GREEN_HEX = "#00b82b"
     _RED_HEX = "#b80000"
 
-    price_fetcher = Fetcher(_EX)
+    price_fetcher = Fetcher(_DEF_EX)
     current_position = int()
     entry_price = float()
     last_price = float()
     zero_pnl = "0.00%"
-    cumulative_pnl = 0.0
     current_pnl = 0.0
 
     position_mapping = {
@@ -113,6 +114,7 @@ class MainApp(App):
                 button_buy
                 button_sell
         """
+
         self.store = JsonStore(f'{self._DEF_DATAJSON_NAME}.json')
         self.load_user_data()
 
@@ -209,7 +211,7 @@ class MainApp(App):
 
         self.main_layout.add_widget(position_buttons_layout)
 
-        self.start_ticker(self._SYM)
+        self.start_ticker(self.current_symbol)
 
         self.popup_settings = Popup(title='Settings',
                                     size_hint=(0.5, 0.5),
@@ -224,7 +226,7 @@ class MainApp(App):
             symbol_button.bind(on_release=lambda symbol_button: self.symbols_dropdown.select(symbol_button.text))
             self.symbols_dropdown.add_widget(symbol_button)
 
-        self.main_symbol_button = Button(text=self._SYM.upper(),
+        self.main_symbol_button = Button(text=self.current_symbol.upper(),
                                          pos_hint={'center_x': .5, 'center_y': .8})
         self.main_symbol_button.bind(on_release=self.symbols_dropdown.open)
         self.symbols_dropdown.bind(on_select=self.change_ticker)
@@ -247,15 +249,14 @@ class MainApp(App):
                                   background_color=[1, 1, 1, .5],
                                   content=self.about_label)
 
-        self.news_status = self._DEFAULT_NEWS_MODE
         self.news_fetcher = NewsFetcher()
         self.button_news = Button(text=self.generate_news_button_text(),
                                    pos_hint={'center_x': .5, 'center_y': .5})
         self.button_news.bind(on_press=self.on_press_news)
         self.settings_buttons.add_widget(self.button_news)
-        self.start_news_flasher()
+        if self.news_status:
+            self.start_news_flasher()
 
-        self.user_fees = self._DEFAULT_FEES
         self.fees_layout = BoxLayout(orientation='horizontal',
                                      padding=[10, 0, 10, 0])
         self.fees_label = Label(text='',
@@ -292,7 +293,7 @@ class MainApp(App):
 
         self.popup_settings.add_widget(self.settings_buttons)
 
-        self.set_display_mode(None)
+        self.set_display_mode(None, load_up=True)
         self.reset_pnl()  # for display mode text
         self.update_symbol_label()  # set up label
 
@@ -305,34 +306,36 @@ class MainApp(App):
         if self.store.exists(self._DEF_DATAJSON_NAME):
             try:
                 data = self.store.get(self._DEF_DATAJSON_NAME)
-                self._SYM = data['_SYM']
+                self._DEF_SYM = data['_SYM']
                 self._DEF_DISP_MODE = data['_DEF_DISP_MODE']
                 self._DEFAULT_NEWS_MODE = data['_DEFAULT_NEWS_MODE']
                 self._DEFAULT_FEES = data['_DEFAULT_FEES']
                 self.cumulative_pnl = data['cum_pnl']
             except KeyError:
-                self.save_user_data(use_default=True)
-        else:
-            self.save_user_data(use_default=True)
+                pass  # no data will be loaded
 
-    def save_user_data(self, use_default=False):
+        self.apply_user_data()
+
+    def apply_user_data(self):
+        """
+        applies default / loaded settings to current run
+        """
+        self.current_symbol = self._DEF_SYM
+        self.current_display_mode = self._DEF_DISP_MODE
+        self.news_status = self._DEFAULT_NEWS_MODE
+        self.user_fees = self._DEFAULT_FEES
+        self.cumulative_pnl = self._DEF_CUM_PNL
+
+    def save_user_data(self, *args):
         """
         save current data
         """
-        if use_default:
-            self.store.put(self._DEF_DATAJSON_NAME,
-                           _SYM=self._SYM,
-                           _DEF_DISP_MODE=self._DEF_DISP_MODE,
-                           _DEFAULT_NEWS_MODE=self._DEFAULT_NEWS_MODE,
-                           _DEFAULT_FEES=self._DEFAULT_FEES,
-                           cum_pnl=0.0)
-        else:
-            self.store.put(self._DEF_DATAJSON_NAME,
-                           _SYM=self._SYM,
-                           _DEF_DISP_MODE=self.current_display_mode,
-                           _DEFAULT_NEWS_MODE=self.news_status,
-                           _DEFAULT_FEES=self.user_fees,
-                           cum_pnl=self.cumulative_pnl)  # todo: cum pnl?
+        self.store.put(self._DEF_DATAJSON_NAME,
+                       _SYM=self.current_symbol,
+                       _DEF_DISP_MODE=self.current_display_mode,
+                       _DEFAULT_NEWS_MODE=self.news_status,
+                       _DEFAULT_FEES=self.user_fees,
+                       cum_pnl=self.cumulative_pnl)
 
     def start_news_flasher(self):
         """
@@ -360,18 +363,19 @@ class MainApp(App):
             sleep(0.075)
         self.reset_news_label()
 
-    def set_display_mode(self, instance):
+    def set_display_mode(self, instance, load_up=False):
         """
         sets 0 for dark mode, 1 for light mode
         """
-        mode = 0 if self.current_display_mode else 1
 
-        self.current_display_mode = mode
-        self.button_display_mode.text = self.display_mode_mapping[mode]
+        if not load_up:
+            self.current_display_mode = 0 if self.current_display_mode else 1
+
+        self.button_display_mode.text = self.display_mode_mapping[self.current_display_mode]
 
         with self.main_layout.canvas.before:
 
-            if mode == 1:
+            if self.current_display_mode == 1:
                 Color(self._LIGHT_MODE_RGB)
                 self.button_refresh.background_normal = 'icons/light_mode/refresh_icon_light.png'
                 self.button_refresh.background_down = 'icons/light_mode/refresh_icon_light.png'
@@ -419,11 +423,11 @@ class MainApp(App):
         disconnects old symbol stream and connects a new one
         uses first fetch via REST for illiquid pairs
         """
-        self.stop_ticker(self._SYM)
+        self.stop_ticker(self.current_symbol)
         self.reset_pnl()
         self.reset_position()
 
-        self._SYM = new_symbol
+        self.current_symbol = new_symbol
         self.update_symbol_label()
         self.start_ticker(new_symbol)
         self.main_symbol_button.text = new_symbol
@@ -541,7 +545,7 @@ class MainApp(App):
         """
         resets cumulative pnl
         """
-        self.cumulative_pnl = 0.0
+        self.cumulative_pnl = self._DEF_CUM_PNL
         self.update_cum_pnl_label()
 
     def update_status_labels(self):
@@ -579,7 +583,7 @@ class MainApp(App):
         will be passed as callback to ws stream
         """
         self.update_pnl(price)
-        precision = self.price_fetcher.get_symbol_precision(self._SYM)
+        precision = self.price_fetcher.get_symbol_precision(self.current_symbol)
         self.price_label.text = f'{price:.{precision}f}'
         if price > self.last_price:
             self.price_label.color = get_color_from_hex(self._GREEN_HEX)
@@ -611,13 +615,13 @@ class MainApp(App):
         """
         Updates the entry price label
         """
-        self.symbol_label.text = self._SYM
+        self.symbol_label.text = self.current_symbol
 
     def update_entry_label(self):
         """
         Updates the entry price label
         """
-        precision = self.price_fetcher.get_symbol_precision(self._SYM)
+        precision = self.price_fetcher.get_symbol_precision(self.current_symbol)
         self.entry_price_label.text = f'{self.entry_price:.{precision}f}'
 
     def update_position_label(self):
@@ -638,7 +642,6 @@ class MainApp(App):
         Updates cumulative PNL label
         """
         self.cum_pnl_label.text = f"{round(self.cumulative_pnl, 2)}%"
-        self.save_user_data()
         if self.cumulative_pnl > 0:
             self.cum_pnl_label.color = get_color_from_hex(self._GREEN_HEX)
         elif self.cumulative_pnl < 0:
@@ -646,6 +649,7 @@ class MainApp(App):
         else:
             self.cum_pnl_label.color = self._TEXT_COLOR_LIGHTMODE if self.current_display_mode \
                 else self._TEXT_COLOR_DARKMODE
+        self.save_user_data()
 
 
 if __name__ == "__main__":
