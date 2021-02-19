@@ -165,26 +165,6 @@ class MainApp(App):
                                 font_size=60,
                                 pos=(0, 0))
         self.main_layout.add_widget(self.news_label)
-        
-        position_buttons_layout = BoxLayout(orientation="horizontal",
-                                            size_hint=(1, 0.5))
-        button_buy = Button(text='Buy',
-                            bold=True,
-                            size_hint=(.8, .8),
-                            pos_hint={'center_x': .5, 'center_y': .8},
-                            background_color=get_color_from_hex("#3de03a"))
-        button_buy.bind(on_press=self.on_press_buy)
-        position_buttons_layout.add_widget(button_buy)
-
-        button_sell = Button(text='Sell',
-                             bold=True,
-                             size_hint=(.8, .8),
-                             pos_hint={'center_x': .5, 'center_y': .8},
-                             background_color=get_color_from_hex("#eb3838"))
-        button_sell.bind(on_press=self.on_press_sell)
-        position_buttons_layout.add_widget(button_sell)
-
-        self.main_layout.add_widget(position_buttons_layout)
 
         options_layout = BoxLayout(orientation="horizontal",
                                    # padding=[200, 100, 100, 100],
@@ -211,6 +191,25 @@ class MainApp(App):
 
         self.main_layout.add_widget(options_layout)
 
+        position_buttons_layout = BoxLayout(orientation="horizontal",
+                                            size_hint=(1, 0.5))
+        button_buy = Button(text='Buy',
+                            bold=True,
+                            size_hint=(.8, .8),
+                            pos_hint={'center_x': .5, 'center_y': .8},
+                            background_color=get_color_from_hex("#3de03a"))
+        button_buy.bind(on_press=self.on_press_buy)
+        position_buttons_layout.add_widget(button_buy)
+
+        button_sell = Button(text='Sell',
+                             bold=True,
+                             size_hint=(.8, .8),
+                             pos_hint={'center_x': .5, 'center_y': .8},
+                             background_color=get_color_from_hex("#eb3838"))
+        button_sell.bind(on_press=self.on_press_sell)
+        position_buttons_layout.add_widget(button_sell)
+
+        self.main_layout.add_widget(position_buttons_layout)
 
         self.start_ticker(self.current_symbol)
 
