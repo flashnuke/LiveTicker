@@ -6,6 +6,7 @@ from kivy.uix.dropdown import DropDown
 from kivy.uix.boxlayout import BoxLayout
 from kivy.graphics import Color, Rectangle
 from kivy.utils import get_color_from_hex
+from kivy.storage.jsonstore import JsonStore
 from PriceFetcher import Fetcher
 from utils.NewsFetcher import NewsFetcher
 from threading import Thread
@@ -43,17 +44,18 @@ class MainApp(App):
     _GIT_URL -  the developer's GITHUB url
     about_info - the text to be displayed in the about window
     """
-    _EX = "Binance"
-    _SYM = "BTCUSDT"
     _DARK_MODE_RGB = (0, 0, 0)
     _TEXT_COLOR_DARKMODE = get_color_from_hex("#ffffff")
     _LIGHT_MODE_RGB = (227 / 255, 214 / 255, 177 / 255)
     _TEXT_COLOR_LIGHTMODE = get_color_from_hex("#000000")
-    _DEF_MODE = 1
+    _EX = "Binance"
+    _SYM = "BTCUSDT"
+    _DEF_DISP_MODE = 1
     _DEFAULT_NEWS_MODE = True
     _DEFAULT_FEES = 0.0
     _PNL_PERC = 2
-    current_display_mode = _DEF_MODE
+    _DEF_DATAJSON_NAME = 'user_data'
+    current_display_mode = _DEF_DISP_MODE
 
     _GREEN_HEX = "#00b82b"
     _RED_HEX = "#b80000"
@@ -101,12 +103,19 @@ class MainApp(App):
                         symbols_list -  dropdown list for symbols
                         button_display_mode - toggle view mode (dark or light)
                         button_news - turn on / off newsflash
+                        button_fees - popup page to fees
+                            fees_label - display fees
+                            fees_up_button - increment fees
+                            fees_down_button - decrement fees
                         button_about - display about
                 cum_pnl_label
             position_buttons_layout
                 button_buy
                 button_sell
         """
+        self.store = JsonStore(f'{self._DEF_DATAJSON_NAME}.json')
+        self.load_user_data()
+
         self.main_layout = BoxLayout(orientation="vertical")
 
         self.main_layout.add_widget(Pulser.bg_pulser)
@@ -205,8 +214,9 @@ class MainApp(App):
         self.popup_settings = Popup(title='Settings',
                                     size_hint=(0.5, 0.5),
                                     background='icons/secondary_background.png',
-                                    background_color=[1, 1, 1, .5])
-        self.settings_buttons = BoxLayout(orientation="vertical", padding=[0, 0, 0, 800])  # in pc, use 100
+                                    background_color=[1, 1, 1, .5],
+                                    on_dismiss=self.save_user_data)
+        self.settings_buttons = BoxLayout(orientation="vertical", padding=[0, 0, 0, 100])  # in pc, use 100
 
         self.symbols_dropdown = DropDown(max_height=650)
         for symbol in self.price_fetcher.get_all_symbols():
@@ -287,6 +297,42 @@ class MainApp(App):
         self.update_symbol_label()  # set up label
 
         return self.main_layout
+
+    def load_user_data(self):
+        """
+        loads caches user data from last run
+        """
+        if self.store.exists(self._DEF_DATAJSON_NAME):
+            try:
+                data = self.store.get(self._DEF_DATAJSON_NAME)
+                self._SYM = data['_SYM']
+                self._DEF_DISP_MODE = data['_DEF_DISP_MODE']
+                self._DEFAULT_NEWS_MODE = data['_DEFAULT_NEWS_MODE']
+                self._DEFAULT_FEES = data['_DEFAULT_FEES']
+                self.cumulative_pnl = data['cum_pnl']
+            except KeyError:
+                self.save_user_data(use_default=True)
+        else:
+            self.save_user_data(use_default=True)
+
+    def save_user_data(self, use_default=False):
+        """
+        save current data
+        """
+        if use_default:
+            self.store.put(self._DEF_DATAJSON_NAME,
+                           _SYM=self._SYM,
+                           _DEF_DISP_MODE=self._DEF_DISP_MODE,
+                           _DEFAULT_NEWS_MODE=self._DEFAULT_NEWS_MODE,
+                           _DEFAULT_FEES=self._DEFAULT_FEES,
+                           cum_pnl=0.0)
+        else:
+            self.store.put(self._DEF_DATAJSON_NAME,
+                           _SYM=self._SYM,
+                           _DEF_DISP_MODE=self.current_display_mode,
+                           _DEFAULT_NEWS_MODE=self.news_status,
+                           _DEFAULT_FEES=self.user_fees,
+                           cum_pnl=self.cumulative_pnl)  # todo: cum pnl?
 
     def start_news_flasher(self):
         """
@@ -592,6 +638,7 @@ class MainApp(App):
         Updates cumulative PNL label
         """
         self.cum_pnl_label.text = f"{round(self.cumulative_pnl, 2)}%"
+        self.save_user_data()
         if self.cumulative_pnl > 0:
             self.cum_pnl_label.color = get_color_from_hex(self._GREEN_HEX)
         elif self.cumulative_pnl < 0:
