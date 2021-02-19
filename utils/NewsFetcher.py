@@ -1,51 +1,64 @@
 import asyncio
 import aiohttp
 from collections import deque
-from time import sleep
+from time import time
 
 
 class NewsFetcher:
-    _K = "c0noo6v48v6t5mebkbl0"  # don't worry, this is a k :)
+    _K = "c0noo6v48v6t5mebkbl0"  # don't worry, this is a free k :)
     _BASE = "https://finnhub.io/api/v1"
     _CAT = "crypto"
     _NEWS_ENDP = "/news"
-
     _LENGTH = 5
-
     _INTERVAL = 60
 
     def __init__(self):
         self.full_path = f"{self._BASE}/{self._NEWS_ENDP}?category={self._CAT}&token={self._K}"
         self.params = {"toke"}
         self.news_deque = deque(maxlen=self._LENGTH)
+        self.last_update = 0
+        self.main_eventloop = asyncio.new_event_loop()
+        self.latest_id = 0
 
     async def fetch_news(self):
         """
         make the request and parse response into deque
+        save latest news id to avoid fetching the same over and over
         """
         async with aiohttp.ClientSession() as session:
-            async with await session.get(url=self.full_path) as res:
+            path = self.full_path + f"&minId={self.latest_id}"
+            async with await session.get(url=path) as res:
                 news = await res.json()
 
                 for entry in news:
+                    news_id = int(entry['id'])
+                    self.latest_id = max(news_id, self.latest_id)
+
                     record = dict()
-                    record["news_id"] = entry['id']
+                    record["news_id"] = news_id
                     record["news_content"] = f"{entry['source']} -- {entry['headline']} -- {entry['summary']}"
                     self.news_deque.append(record)
 
-    async def updates_pusher(self, cb_ptr):
+    async def updates_pusher(self, cb_ptr, status):
         """
         will receive the callback from the main app and push updates
         """
-        await self.fetch_news()
+        now = time()
+        if now - self.last_update > self._INTERVAL:
+            await self.fetch_news()
+            self.last_update = now
+
         for record in self.news_deque:
+            if not status:
+                break
             cb_ptr(record["news_content"])
 
-        await asyncio.sleep(self._INTERVAL)
-
-    def news_manager(self, cb_ptr):
+    def news_manager(self, cb_ptr, status: bool):
         """
         runner for entire class
+        status and cb_ptr are passed from main app
+
+        use class attr eventloop to avoid race condition
         """
-        while True:
-            asyncio.new_event_loop().run_until_complete(self.updates_pusher(cb_ptr))
+        while status:
+            self.main_eventloop.run_until_complete(self.updates_pusher(cb_ptr, status))

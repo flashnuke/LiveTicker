@@ -11,6 +11,7 @@ from utils.NewsFetcher import NewsFetcher
 from threading import Thread
 from time import sleep
 import webbrowser
+import asyncio
 
 from utils import Pulser
 
@@ -26,6 +27,7 @@ class MainApp(App):
     _DARK_MODE_RGB = RGB for dark mode
     _LIGHT_MODE_RGB = RGB for light mode
     _DEF_MODE = default view mode
+    _DEFAULT_NEWS_MODE = default status for displaying news
 
     current_position - current position being held (1 for long, -1 for short, 0 for none)
     entry_price - entry price for current position
@@ -47,6 +49,7 @@ class MainApp(App):
     _LIGHT_MODE_RGB = (227 / 255, 214 / 255, 177 / 255)
     _TEXT_COLOR_LIGHTMODE = get_color_from_hex("#000000")
     _DEF_MODE = 1
+    _DEFAULT_NEWS_MODE = True
     current_display_mode = _DEF_MODE
 
     _GREEN_HEX = "#00b82b"
@@ -92,6 +95,8 @@ class MainApp(App):
                     popup_settings - a popup window for settings
                         symbols_list -  dropdown list for symbols
                         button_display_mode - toggle view mode (dark or light)
+                        button_about - display about
+                        button_news - turn on / off newsflash
                 cum_pnl_label
             position_buttons_layout
                 button_buy
@@ -196,7 +201,7 @@ class MainApp(App):
                                     size_hint=(0.5, 0.5),
                                     background='icons/secondary_background.png',
                                     background_color=[1, 1, 1, .5])
-        self.settings_buttons = BoxLayout(orientation="vertical", padding=[0, 0, 0, 800])  # in pc, use 200
+        self.settings_buttons = BoxLayout(orientation="vertical", padding=[0, 0, 0, 200])  # in pc, use 200
 
         self.symbols_dropdown = DropDown(max_height=650)
         for symbol in self.price_fetcher.get_all_symbols():
@@ -232,15 +237,27 @@ class MainApp(App):
         self.button_about.bind(on_press=self.on_press_about)
         self.settings_buttons.add_widget(self.button_about)
 
+        self.news_status = self._DEFAULT_NEWS_MODE
+        self.news_fetcher = NewsFetcher()
+        self.button_news = Button(text=self.generate_news_button_text(),
+                                   pos_hint={'center_x': .5, 'center_y': .5})
+        self.button_news.bind(on_press=self.on_press_news)
+        self.settings_buttons.add_widget(self.button_news)
+        self.start_news_flasher()
+
         self.popup_settings.add_widget(self.settings_buttons)
 
         self.set_display_mode(None)
         self.reset_pnl()  # for display mode text
         self.update_symbol_label()  # set up label
 
-        self.news_fetcher = NewsFetcher()
-        Thread(target=self.news_fetcher.news_manager, args=(self.flash_news,), daemon=True).start()
         return self.main_layout
+
+    def start_news_flasher(self):
+        """
+        will be triggered upon button press and at launch
+        """
+        Thread(target=self.news_fetcher.news_manager, args=(self.flash_news, self.news_status), daemon=True).start()
 
     def reset_news_label(self):
         """
@@ -252,19 +269,14 @@ class MainApp(App):
         """
         display a newsflash
         """
-        # todo: option to turn off
-
-        sleep(2)
         counter = 0
         text = 3 * len(text) * ' ' + text
-        while counter < len(text):
+        while (not text == len(text) * ' ') and self.news_status:
             self.news_label.text = text
             text = text[1:] + ' '
             counter += 1
-            if all([l == ' ' for l in text]):
-                self.reset_news_label()
-                break
             sleep(0.05)
+        self.reset_news_label()
 
     def set_display_mode(self, instance):
         """
@@ -333,6 +345,21 @@ class MainApp(App):
         self.update_symbol_label()
         self.start_ticker(new_symbol)
         self.main_symbol_button.text = new_symbol
+
+    def on_press_news(self, instance):
+        """
+        enable / disable newsflash
+        """
+        self.news_status = not self.news_status
+        self.button_news.text = self.generate_news_button_text()
+        if self.news_status:
+            self.start_news_flasher()
+
+    def generate_news_button_text(self):
+        """
+        generate label for news toggler based on status
+        """
+        return f'Display news - {self.news_status}'
 
     def on_press_about(self, instance):
         """
