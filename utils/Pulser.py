@@ -5,9 +5,9 @@ from kivy.uix.widget import Widget
 
 
 class Pulser(Widget):
-    _RED = [1, 0, 0, 0.4]
-    _GREEN = [0.196, 0.8, 0.196, 0.4]
-    _DURATION = 1.0
+    _RED = [1, 0, 0, 0.3]
+    _GREEN = [0.196, 0.8, 0.196, 0.3]
+    _DURATION = 1.75
     bg_color = ObjectProperty(_RED)
     size_hint = (.000001, .000001)
 
