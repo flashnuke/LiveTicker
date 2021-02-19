@@ -11,7 +11,6 @@ from utils.NewsFetcher import NewsFetcher
 from threading import Thread
 from time import sleep
 import webbrowser
-import asyncio
 
 from utils import Pulser
 
@@ -29,6 +28,7 @@ class MainApp(App):
     _DEF_MODE = default view mode
     _DEFAULT_NEWS_MODE = default status for displaying news
     _DEFAULT_FEES = default user fees
+    _PNL_PERC = decimal percision for pnl display
 
     current_position - current position being held (1 for long, -1 for short, 0 for none)
     entry_price - entry price for current position
@@ -52,6 +52,7 @@ class MainApp(App):
     _DEF_MODE = 1
     _DEFAULT_NEWS_MODE = True
     _DEFAULT_FEES = 0.0
+    _PNL_PERC = 2
     current_display_mode = _DEF_MODE
 
     _GREEN_HEX = "#00b82b"
@@ -552,7 +553,7 @@ class MainApp(App):
                 (1 - self.current_pnl) * 100
             self.apply_fees()
 
-            self.pnl_label.text = str(f"{round(self.current_pnl, 2)}%")
+            self.pnl_label.text = f'{self.current_pnl:.{self._PNL_PERC}f}%'
             if self.current_pnl > 0:
                 self.pnl_label.color = get_color_from_hex(self._GREEN_HEX)
             elif self.current_pnl < 0:

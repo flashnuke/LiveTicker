@@ -44,6 +44,5 @@ class Fetcher:
     def get_symbol_precision(self, symbol: str):
         """
         returns symbol precision for proper printing
-        # todo: lru_cache()
         """
         return self.exchange_manager.get_precision(symbol)
