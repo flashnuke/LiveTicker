@@ -139,6 +139,12 @@ class MainApp(App, Widget):
         with self.main_layout.canvas:
             Rectangle(source="icons/lightning.png", size=(1450, 1450), pos=(0, 550))
 
+        self.news_label = Label(text='',
+                                size_hint=(.5, .5),
+                                font_size=60,
+                                pos=(0, 0))
+        self.main_layout.add_widget(self.news_label)
+
         options_layout = BoxLayout(orientation="horizontal",
                                    # padding=[200, 100, 100, 100],
                                    pos_hint={'center_x': 0.6, 'center_y': 0.5},
@@ -232,7 +238,31 @@ class MainApp(App, Widget):
         self.reset_pnl()  # for display mode text
         self.update_symbol_label()  # set up label
 
+        Thread(target=self.display_news, args=("test",), daemon=True).start()
         return self.main_layout
+
+    def news_manager(self):
+        """
+        will fetch financial news and flash them
+        """
+        # todo: option to turn off
+        
+
+    def flash_news(self, text):
+        """
+        display a newsflash
+        """
+        sleep(2)
+        counter = 0
+        text = 100 * ' ' + text
+        while counter < len(text) + 100:
+            self.news_label.text = text
+            text = text[1:] + ' '
+            print(text)
+            counter += 1
+            sleep(0.1)
+        self.news_label.text = ''  # todo: reset method refractor
+        print("got here")
 
     def set_display_mode(self, instance):
         """
