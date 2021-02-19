@@ -6,8 +6,8 @@ from kivy.uix.dropdown import DropDown
 from kivy.uix.boxlayout import BoxLayout
 from kivy.graphics import Color, Rectangle
 from kivy.utils import get_color_from_hex
-from kivy.uix.widget import Widget
 from PriceFetcher import Fetcher
+from utils.NewsFetcher import NewsFetcher
 from threading import Thread
 from time import sleep
 import webbrowser
@@ -19,7 +19,7 @@ from utils import Pulser
 # Config.set('graphics', 'height', '915')
 
 
-class MainApp(App, Widget):
+class MainApp(App):
     """
     _EX = exchange (for now hard coded to 'Binance')
     _SYM = symbol (for now default is'btcusdt')
@@ -238,31 +238,33 @@ class MainApp(App, Widget):
         self.reset_pnl()  # for display mode text
         self.update_symbol_label()  # set up label
 
-        Thread(target=self.display_news, args=("test",), daemon=True).start()
+        self.news_fetcher = NewsFetcher()
+        Thread(target=self.news_fetcher.news_manager, args=(self.flash_news,), daemon=True).start()
         return self.main_layout
 
-    def news_manager(self):
+    def reset_news_label(self):
         """
-        will fetch financial news and flash them
+        set back to empty text after newsflash is over
         """
-        # todo: option to turn off
-        
+        self.news_label.text = ''
 
     def flash_news(self, text):
         """
         display a newsflash
         """
+        # todo: option to turn off
+
         sleep(2)
         counter = 0
-        text = 100 * ' ' + text
-        while counter < len(text) + 100:
+        text = 3 * len(text) * ' ' + text
+        while counter < len(text):
             self.news_label.text = text
             text = text[1:] + ' '
-            print(text)
             counter += 1
-            sleep(0.1)
-        self.news_label.text = ''  # todo: reset method refractor
-        print("got here")
+            if all([l == ' ' for l in text]):
+                self.reset_news_label()
+                break
+            sleep(0.05)
 
     def set_display_mode(self, instance):
         """
