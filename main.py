@@ -353,6 +353,8 @@ class MainApp(App):
         enable / disable newsflash
         """
         self.news_status = not self.news_status
+        if not self.news_status:
+            self.news_fetcher.turn_off()
         self.button_news.text = self.generate_news_button_text()
         if self.news_status:
             self.start_news_flasher()

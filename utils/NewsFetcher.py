@@ -32,6 +32,7 @@ class NewsFetcher:
         self.last_update = 0
         self.main_eventloop = asyncio.new_event_loop()
         self.latest_id = 0
+        self.status = False
 
     async def fetch_news(self):
         """
@@ -72,5 +73,12 @@ class NewsFetcher:
 
         use class attr eventloop to avoid race condition
         """
-        while status:
+        self.status = True
+        while self.status:
             self.main_eventloop.run_until_complete(self.updates_pusher(cb_ptr, status))
+
+    def turn_off(self):
+        """
+        turn off using status class attr
+        """
+        self.status = False
