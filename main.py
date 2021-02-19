@@ -105,8 +105,10 @@ class MainApp(App):
                 button_sell
         """
         self.main_layout = BoxLayout(orientation="vertical")
-        self.main_layout.add_widget(Pulser.bg_pulser)
 
+        self.main_layout.add_widget(Pulser.bg_pulser)
+        with self.main_layout.canvas:
+            Rectangle(source="icons/lightning.png", size=(1450, 1450), pos=(0, 550))
         self.symbol_label = Label(text='',
                                   bold=True,
                                   size_hint=(.5, .5),
@@ -143,8 +145,6 @@ class MainApp(App):
                                        pos_hint={'center_x': .5, 'center_y': .9})
         entry_price_status_layout.add_widget(self.entry_price_label)  # add price label
         self.main_layout.add_widget(entry_price_status_layout)
-        with self.main_layout.canvas:
-            Rectangle(source="icons/lightning.png", size=(1450, 1450), pos=(0, 550))
 
         self.news_label = Label(text='',
                                 size_hint=(.5, .5),
