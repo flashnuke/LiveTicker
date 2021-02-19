@@ -305,7 +305,8 @@ class MainApp(App):
         """
         counter = 0
         text = 3 * len(text) * ' ' + text
-        while (not text == len(text) * ' ') and self.news_status:
+        counter_end = len(text)
+        while counter < counter_end and self.news_status:
             self.news_label.text = text
             text = text[1:] + ' '
             counter += 1
@@ -547,11 +548,11 @@ class MainApp(App):
         """
         if self.current_position != 0:
             self.current_pnl = (self.entry_price / price)
-            self.current_pnl = round((self.current_pnl - 1) * 100, 2) if self.current_position == -1 else \
-                round((1 - self.current_pnl) * 100, 2)
+            self.current_pnl = (self.current_pnl - 1) * 100 if self.current_position == -1 else \
+                (1 - self.current_pnl) * 100
             self.apply_fees()
 
-            self.pnl_label.text = str(f"{self.current_pnl}%")
+            self.pnl_label.text = str(f"{round(self.current_pnl, 2)}%")
             if self.current_pnl > 0:
                 self.pnl_label.color = get_color_from_hex(self._GREEN_HEX)
             elif self.current_pnl < 0:
