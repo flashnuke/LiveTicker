@@ -354,13 +354,13 @@ class MainApp(App):
         display a newsflash
         """
         counter = 0
-        text = 3 * len(text) * ' ' + text
+        text = min(3 * len(text), 700) * ' ' + text
         counter_end = int(len(text) * 0.75)
         while counter < counter_end and self.news_status:
             self.news_label.text = text
             text = text[1:] + ' '
             counter += 1
-            sleep(0.075)
+            sleep(0.02)
         self.reset_news_label()
 
     def set_display_mode(self, instance, load_up=False):
@@ -391,6 +391,8 @@ class MainApp(App):
                 self.main_layout.canvas.before.clear()
 
         self.entry_price_label.color = self._TEXT_COLOR_LIGHTMODE if self.current_display_mode else \
+            self._TEXT_COLOR_DARKMODE
+        self.news_label.color = self._TEXT_COLOR_LIGHTMODE if self.current_display_mode else \
             self._TEXT_COLOR_DARKMODE
 
         if self.pnl_label.text == self.zero_pnl:  # if zero pnl
