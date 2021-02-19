@@ -311,7 +311,7 @@ class MainApp(App):
             self.news_label.text = text
             text = text[1:] + ' '
             counter += 1
-            sleep(0.05)
+            sleep(0.075)
         self.reset_news_label()
 
     def set_display_mode(self, instance):
