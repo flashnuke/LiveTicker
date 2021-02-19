@@ -84,11 +84,13 @@ class MainApp(App):
     def build(self):
         """
         main_layout  (used as class attr)
+            symbol_label - see current symbol
             price_label - live price feed
             pnl_label - live PnL of current position
             entry_price_status_layout
                 pos_str_label - string representation of current position
                 entry_price_label - entry price of current position
+            news_label - news flash
             options_layout - to add padding to the button
                 button_refresh - a refresh button for the cumulative PnL
                 button_settings - a button to open settings menu

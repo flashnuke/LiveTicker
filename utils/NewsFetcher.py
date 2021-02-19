@@ -5,6 +5,20 @@ from time import time
 
 
 class NewsFetcher:
+    """
+    _K - k
+    _BASE - path base
+    _CAT - category for news
+    _NEWS_ENDP - news endpoint
+    _LENGTH - max num of news to maintain
+    _INTERVAL - interval between api fetches
+
+    self.news_deque - will store news in deque
+    self.last_update - flag to maintain track of last fetch time
+    self.main_eventloop - use the same event loop to avoid race condition
+    self.latest_id - maintain track of latest news id to avoid fetching the same data
+    """
+
     _K = "c0noo6v48v6t5mebkbl0"  # don't worry, this is a free k :)
     _BASE = "https://finnhub.io/api/v1"
     _CAT = "crypto"
@@ -14,7 +28,6 @@ class NewsFetcher:
 
     def __init__(self):
         self.full_path = f"{self._BASE}/{self._NEWS_ENDP}?category={self._CAT}&token={self._K}"
-        self.params = {"toke"}
         self.news_deque = deque(maxlen=self._LENGTH)
         self.last_update = 0
         self.main_eventloop = asyncio.new_event_loop()
