@@ -310,7 +310,7 @@ class MainApp(App):
                 self._DEF_DISP_MODE = data['_DEF_DISP_MODE']
                 self._DEFAULT_NEWS_MODE = data['_DEFAULT_NEWS_MODE']
                 self._DEFAULT_FEES = data['_DEFAULT_FEES']
-                self.cumulative_pnl = data['cum_pnl']
+                self._DEF_CUM_PNL = data['cum_pnl']
             except KeyError:
                 pass  # no data will be loaded
 
@@ -547,7 +547,7 @@ class MainApp(App):
         """
         resets cumulative pnl
         """
-        self.cumulative_pnl = self._DEF_CUM_PNL
+        self.cumulative_pnl = 0.0
         self.update_cum_pnl_label()
 
     def update_status_labels(self):
