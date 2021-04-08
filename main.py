@@ -353,14 +353,16 @@ class MainApp(App):
         """
         display a newsflash
         """
-        counter = 0
-        text = min(3 * len(text), 700) * ' ' + text
-        counter_end = int(len(text) * 0.75)
-        while counter < counter_end and self.news_status:
-            self.news_label.text = text
-            text = text[1:] + ' '
-            counter += 1
-            sleep(0.02)
+        def_y_pos = self.news_label.pos[1]
+        pos = 5000
+        counter = 2 * pos
+        self.news_label.pos = (pos, def_y_pos)
+        self.news_label.text = text
+        while counter > 0 and self.news_status:
+            pos -= 1.5
+            counter -= 1
+            self.news_label.pos = (pos, def_y_pos)
+            sleep(0.01)
         self.reset_news_label()
 
     def set_display_mode(self, instance, load_up=False):
@@ -441,9 +443,9 @@ class MainApp(App):
         self.news_status = not self.news_status
         if not self.news_status:
             self.news_fetcher.turn_off()
-        self.button_news.text = self.generate_news_button_text()
-        if self.news_status:
+        else:
             self.start_news_flasher()
+        self.button_news.text = self.generate_news_button_text()
 
     def generate_news_button_text(self):
         """
