@@ -6,10 +6,12 @@ import os
 import certifi
 from math import log10
 from functools import lru_cache
+from time import time
 
 
 class Binance:
     """
+    _DEF_THROTTLE_UPD - throttle updates to this value
     _SUPPORTED_TICKERS - all supported tickers at the time being
     _BASE_REST - base for REST path
     _BASE_WS - base for WS path
@@ -17,7 +19,10 @@ class Binance:
     tickers - a dict containing all symbols and their prices (if connected)
     _ticker_precision - quote precision for all tickers
     _connected_tickers - all currenctly connected tickers
+    last_update - last update time of price for throttling
     """
+
+    _DEF_THROTTLE_UPD = 0.1  # 100[ms]
 
     _SUPPORTED_TICKERS = {
         "AAVEUSDT",
@@ -48,8 +53,16 @@ class Binance:
         self._tickers = dict()
         self._ticker_precision = dict()
         self._connected_tickers = set()
+        self.last_update = self.get_time()
 
         self.set_up_tickers()
+
+    @staticmethod
+    def get_time():
+        """
+        returns time in [ms]
+        """
+        return time() * 1_000
 
     @lru_cache()
     def get_precision_based_on_ticksize(self, ticksize: float):
@@ -95,11 +108,14 @@ class Binance:
         async with websockets.connect(full_path) as ws:
             while symbol.upper() in self._connected_tickers:
                 try:
-                    result = await ws.recv()
-                    if symbol.upper() in self._connected_tickers:  # a second check to avoid lags
-                        result = json.loads(result)
-                        self.trade_stream_parser(result['data'])
-                        cb_func(self._tickers[symbol.upper()])
+                    now = self.get_time()
+                    if now - self.last_update > self._DEF_THROTTLE_UPD:
+                        self.last_update = now
+                        result = await ws.recv()
+                        if symbol.upper() in self._connected_tickers:  # a second check to avoid lags
+                            result = json.loads(result)
+                            self.trade_stream_parser(result['data'])
+                            cb_func(self._tickers[symbol.upper()])
 
                 except ConnectionAbortedError:
                     print(f"Exception '{ConnectionAbortedError.__name__}' in re-establishing ws")
@@ -171,3 +187,9 @@ class Binance:
         getter for self.tickers
         """
         return self._tickers
+
+    def set_throttle(self, new_val: float):
+        """
+        setter for throttle
+        """
+        self._DEF_THROTTLE_UPD = new_val
