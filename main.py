@@ -7,13 +7,13 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.graphics import Color, Rectangle
 from kivy.utils import get_color_from_hex
 from kivy.storage.jsonstore import JsonStore
-from PriceFetcher import Fetcher
-from utils.NewsFetcher import NewsFetcher
+from assets.utils.PriceFetcher import Fetcher
+from assets.utils.NewsFetcher import NewsFetcher
 from threading import Thread
 from time import sleep
 import webbrowser
 
-from utils import Pulser
+from assets.utils import Pulser
 
 # from kivy.config import Config
 # Config.set('graphics', 'width', '412')
