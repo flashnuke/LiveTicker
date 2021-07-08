@@ -1,4 +1,4 @@
-from utils.BinanceFetcher import Binance
+from .BinanceFetcher import Binance
 from functools import lru_cache
 
 
